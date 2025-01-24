@@ -31,16 +31,16 @@ public class DataAccessTests {
     @Order(1)
     @DisplayName("clearUsersTest")
     public void clearUsers() throws DataAccessException, SQLException {
-        userDao.createUser("Im","Just","Trash");
-        userDao.createUser("Scrap","Metal","User");
-        userDao.createUser("Into","The","Incinerator");
+        userDao.createUser("Im", "Just", "Trash");
+        userDao.createUser("Scrap", "Metal", "User");
+        userDao.createUser("Into", "The", "Incinerator");
 
         userDao.clearUsers();
 
         try (PreparedStatement preparedStatement =
-                     conn.prepareStatement("SELECT count(*) FROM users")){
-            try (var result = preparedStatement.executeQuery()){
-                if (result.next()){
+                     conn.prepareStatement("SELECT count(*) FROM users")) {
+            try (var result = preparedStatement.executeQuery()) {
+                if (result.next()) {
                     assertEquals(0, result.getInt(1));
                 }
             }
@@ -53,13 +53,13 @@ public class DataAccessTests {
     @DisplayName("createUserTest")
     public void create() throws DataAccessException, SQLException {
         userDao.clearUsers();
-        userDao.createUser("Agh","Not","Again!");
+        userDao.createUser("Agh", "Not", "Again!");
 
         try (PreparedStatement preparedStatement =
-                     conn.prepareStatement("SELECT username FROM users WHERE username = ?")){
+                     conn.prepareStatement("SELECT username FROM users WHERE username = ?")) {
             preparedStatement.setString(1, "Agh");
-            try (var result = preparedStatement.executeQuery()){
-                if (result.next()){
+            try (var result = preparedStatement.executeQuery()) {
+                if (result.next()) {
                     assertEquals("Agh", result.getString(1));
                 }
             }
@@ -71,9 +71,9 @@ public class DataAccessTests {
     @DisplayName("createUserTestFailure")
     public void createFail() throws DataAccessException {
         userDao.clearUsers();
-        userDao.createUser("Agh","Not","Again!");
+        userDao.createUser("Agh", "Not", "Again!");
 
-        assertThrows(DataAccessException.class, ()-> userDao.createUser("Agh","Not","Again!"));
+        assertThrows(DataAccessException.class, () -> userDao.createUser("Agh", "Not", "Again!"));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DataAccessTests {
     @DisplayName("checkUserTest")
     public void check() throws DataAccessException {
         userDao.clearUsers();
-        userDao.createUser("Agh","Not","Again!");
+        userDao.createUser("Agh", "Not", "Again!");
 
         assertTrue(userDao.checkUser("Agh"));
 
@@ -92,7 +92,7 @@ public class DataAccessTests {
     @DisplayName("checkUserTestFailure")
     public void checkFail() throws DataAccessException {
         userDao.clearUsers();
-        userDao.createUser("Agh","Not","Again!");
+        userDao.createUser("Agh", "Not", "Again!");
 
         assertFalse(userDao.checkUser("null"));
 
@@ -114,9 +114,9 @@ public class DataAccessTests {
     @DisplayName("getPasswordTestFailure")
     public void getPasswordFail() throws DataAccessException {
         userDao.clearUsers();
-        userDao.createUser("Agh","Not","Again!");
+        userDao.createUser("Agh", "Not", "Again!");
 
-        assertThrows(DataAccessException.class, ()-> userDao.getPassword("null"));
+        assertThrows(DataAccessException.class, () -> userDao.getPassword("null"));
 
     }
 
@@ -131,9 +131,9 @@ public class DataAccessTests {
         gameDao.clearGames();
 
         try (PreparedStatement preparedStatement =
-                     conn.prepareStatement("SELECT count(*) FROM games")){
-            try (var result = preparedStatement.executeQuery()){
-                if (result.next()){
+                     conn.prepareStatement("SELECT count(*) FROM games")) {
+            try (var result = preparedStatement.executeQuery()) {
+                if (result.next()) {
                     assertEquals(0, result.getInt(1));
                 }
             }
@@ -149,10 +149,10 @@ public class DataAccessTests {
         gameDao.createGame(new GameName("MyGame"));
 
         try (PreparedStatement preparedStatement =
-                     conn.prepareStatement("SELECT gameName FROM games WHERE gameName = ?")){
+                     conn.prepareStatement("SELECT gameName FROM games WHERE gameName = ?")) {
             preparedStatement.setString(1, "MyGame");
-            try (var result = preparedStatement.executeQuery()){
-                if (result.next()){
+            try (var result = preparedStatement.executeQuery()) {
+                if (result.next()) {
                     assertEquals("MyGame", result.getString(1));
                 }
             }
@@ -251,9 +251,9 @@ public class DataAccessTests {
         authDao.clearAuthData();
 
         try (PreparedStatement preparedStatement =
-                     conn.prepareStatement("SELECT count(*) FROM auth")){
-            try (var result = preparedStatement.executeQuery()){
-                if (result.next()){
+                     conn.prepareStatement("SELECT count(*) FROM auth")) {
+            try (var result = preparedStatement.executeQuery()) {
+                if (result.next()) {
                     assertEquals(0, result.getInt(1));
                 }
             }
@@ -268,10 +268,10 @@ public class DataAccessTests {
         authDao.generateToken("MyUsername");
 
         try (PreparedStatement preparedStatement =
-                     conn.prepareStatement("SELECT username FROM auth WHERE username = ?")){
+                     conn.prepareStatement("SELECT username FROM auth WHERE username = ?")) {
             preparedStatement.setString(1, "MyUsername");
-            try (var result = preparedStatement.executeQuery()){
-                if (result.next()){
+            try (var result = preparedStatement.executeQuery()) {
+                if (result.next()) {
                     assertEquals("MyUsername", result.getString(1));
                 }
             }
@@ -286,6 +286,81 @@ public class DataAccessTests {
         assertThrows(DataAccessException.class, () -> authDao.generateToken(null));
     }
 
+    @Test
+    @Order(20)
+    @DisplayName("checkTokenTest")
+    public void checkToken() throws DataAccessException {
+        authDao.clearAuthData();
+        String authToken = authDao.generateToken("MyUsername");
+
+
+        assertTrue(authDao.checkToken(authToken));
+
+    }
+
+    @Test
+    @Order(21)
+    @DisplayName("checkTokenTestFailure")
+    public void checkTokenFail() throws DataAccessException {
+        authDao.clearAuthData();
+        String authToken = authDao.generateToken("MyUsername");
+
+
+        assertFalse(authDao.checkToken(null));
+
+    }
+
+    @Test
+    @Order(22)
+    @DisplayName("getUsernameTest")
+    public void getUsername() throws DataAccessException {
+        authDao.clearAuthData();
+        String authToken = authDao.generateToken("MyUsername");
+
+
+        assertEquals("MyUsername", authDao.getUsername(authToken));
+
+    }
+
+    @Test
+    @Order(23)
+    @DisplayName("getUsernameTest")
+    public void getUsernameFail() throws DataAccessException {
+        authDao.clearAuthData();
+        String authToken = authDao.generateToken("MyUsername");
+
+
+        assertNotEquals("No", authDao.getUsername(authToken));
+
+    }
+
+    @Test
+    @Order(24)
+    @DisplayName("getAuthDataTest")
+    public void getAuthData() throws DataAccessException {
+        authDao.clearAuthData();
+        authDao.generateToken("MyUsername");
+        authDao.generateToken("MyUsername2");
+        authDao.generateToken("MyUsername3");
+
+        Map<String, String> authMap = authDao.getAuthData();
+
+        assertEquals(3, authMap.size());
+
+    }
+
+    @Test
+    @Order(25)
+    @DisplayName("getUsernameTestFail")
+    public void getAuthDataFail() throws DataAccessException {
+        authDao.clearAuthData();
+
+        Map<String, String> authMap = authDao.getAuthData();
+
+        assertEquals(0, authMap.size());
+
+
+    }
+
+
 }
-
-
