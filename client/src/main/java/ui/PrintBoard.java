@@ -35,13 +35,13 @@ public class PrintBoard {
 
         ChessBoard theBoard = game.getBoard();
 
-        for (int i = 1; i < 9; i++){
+        for (int i = 8; i > 0; i--){
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(" ");
             out.print(SET_TEXT_COLOR_WHITE);
-            out.print(9-i);
+            out.print(i);
             out.print(" ");
-            for (int j = 1; j < 9; j++){
+            for (int j = 8; j > 0; j--){
 
                 if ((9 - i + j) % 2 == 0){
                     out.print(SET_BG_COLOR_BLACK);
@@ -62,7 +62,7 @@ public class PrintBoard {
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(" ");
             out.print(SET_TEXT_COLOR_WHITE);
-            out.print(9-i);
+            out.print(i);
             out.print(" ");
             out.print(RESET_BG_COLOR);
             out.print("\n");
