@@ -18,17 +18,17 @@ public class ChessClient {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            switch (cmd) {
-                case "quit" -> ;
-                case "login" -> ;
-                case "register" -> ;
-                case "logout" -> ;
-                case "create" -> ;
-                case "list" -> ;
-                case "play" -> ;
-                case "observe" -> ;
+            return switch (cmd) {
+//                case "quit" -> ;
+//                case "login" -> ;
+//                case "register" -> ;
+//                case "logout" -> ;
+//                case "create" -> ;
+//                case "list" -> ;
+//                case "play" -> ;
+//                case "observe" -> ;
                 default -> help();
-            }
+            };
         } catch (Exception ex) {
             return ex.getMessage();
         }
