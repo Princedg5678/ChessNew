@@ -22,26 +22,26 @@ public class ServerFacade {
 
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
-
-    }
-
-
-    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
-
-    }
-
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
-
-    }
-
-    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
-
-    }
-
-
-    private boolean isSuccessful(int status) {
-        return status / 100 == 2;
-    }
+//    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+//
+//    }
+//
+//
+//    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
+//
+//    }
+//
+//    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+//
+//    }
+//
+//    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
+//
+//    }
+//
+//
+//    private boolean isSuccessful(int status) {
+//        return status / 100 == 2;
+//    }
 
 }
