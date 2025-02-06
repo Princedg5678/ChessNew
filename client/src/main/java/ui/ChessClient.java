@@ -19,9 +19,8 @@ public class ChessClient {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-//                case "quit" -> ;
 //                case "login" -> ;
-//                case "register" -> ;
+                case "register" -> register(params);
 //                case "logout" -> ;
 //                case "create" -> ;
 //                case "list" -> ;
@@ -53,6 +52,17 @@ public class ChessClient {
                 """;
     }
 
+    public String register(String... params) throws ResponseException{
+        if (params.length < 3){
+            throw new ResponseException("Error: Expected <username> <password> <email>");
+        }
+
+        String username = params[0];
+        String password = params[1];
+        String email = params[2];
+
+        return null;
+    }
 
 
 }

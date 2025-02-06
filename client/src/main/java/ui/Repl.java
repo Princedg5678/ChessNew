@@ -20,8 +20,14 @@ public class Repl {
         Scanner scanner = new Scanner(System.in);
 
         String result = scanner.nextLine();
-        while (!result.equals("quit")){
-            client.eval(result);
+        while (!result.equals("quit")) {
+             try {
+                result = client.eval(result);
+                System.out.println(result);
+            } catch (Exception e) {
+                 System.out.println(e.getMessage());
+             }
+            result = scanner.nextLine();
         }
     }
 
