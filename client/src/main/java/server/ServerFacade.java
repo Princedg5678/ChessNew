@@ -2,6 +2,8 @@ package server;
 
 import com.google.gson.Gson;
 
+import model.RegisterUser;
+import model.UserData;
 import ui.ResponseException;
 
 import java.io.IOException;
@@ -22,26 +24,39 @@ public class ServerFacade {
 
     }
 
-//    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
-//
-//    }
-//
-//
-//    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
-//
-//    }
-//
-//    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
-//
-//    }
-//
-//    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
-//
-//    }
-//
-//
-//    private boolean isSuccessful(int status) {
-//        return status / 100 == 2;
-//    }
+
+    public UserData registerUser(RegisterUser newUser){
+
+
+        return null;
+    }
+
+
+
+
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+
+
+        return null;
+    }
+
+
+    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
+
+    }
+
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+
+    }
+
+    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
+
+
+        return null;
+    }
+
+    private boolean isSuccessful(int status) {
+        return status / 100 == 2;
+    }
 
 }

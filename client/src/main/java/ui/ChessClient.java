@@ -1,5 +1,10 @@
 package ui;
 
+import model.AuthData;
+import model.RegisterUser;
+import model.UserData;
+import server.ServerFacade;
+
 import java.util.Arrays;
 
 public class ChessClient {
@@ -7,10 +12,13 @@ public class ChessClient {
     //private final ServerFacade server;
     private final String serverURL;
     private final State currentState = State.SIGNEDOUT;
+    private final ServerFacade server;
+    private String authToken;
 
 
     public ChessClient(String serverUrl){
         this.serverURL = serverUrl;
+        this.server = new ServerFacade(serverUrl);
     }
 
     public String eval(String input) {
@@ -19,13 +27,13 @@ public class ChessClient {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-//                case "login" -> ;
+                case "login" -> login(params);
                 case "register" -> register(params);
-//                case "logout" -> ;
-//                case "create" -> ;
-//                case "list" -> ;
-//                case "play" -> ;
-//                case "observe" -> ;
+                case "logout" -> logout(params);
+                case "create" -> create(params);
+                case "list" -> list(params);
+                case "play" -> play(params);
+                case "observe" -> observe(params);
                 default -> help();
             };
         } catch (Exception ex) {
@@ -60,6 +68,46 @@ public class ChessClient {
         String username = params[0];
         String password = params[1];
         String email = params[2];
+
+        RegisterUser newUser = new RegisterUser(username, password, email);
+        UserData registeredUser = server.registerUser(newUser);
+        authToken = registeredUser.authToken();
+
+        return null;
+    }
+
+    public String login(String... params) throws ResponseException{
+
+
+        return null;
+    }
+
+    public String logout(String... params) throws ResponseException{
+
+
+        return null;
+    }
+
+    public String create(String... params) throws ResponseException{
+
+
+        return null;
+    }
+
+    public String list(String... params) throws ResponseException{
+
+
+        return null;
+    }
+
+    public String play(String... params) throws ResponseException{
+
+
+        return null;
+    }
+
+    public String observe(String... params) throws ResponseException{
+
 
         return null;
     }
