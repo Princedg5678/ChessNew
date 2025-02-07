@@ -92,12 +92,7 @@ public class ChessPiece {
 
         if (checkInBounds(possibleMove)){
             if (board.getPiece(possibleMove) == null){
-                if (possibleMove.getRow() == 8 || possibleMove.getRow() == 1){
-                    moveList.addAll(promotePawn(myPosition, possibleMove));
-                }
-                else{
-                    moveList.add(new ChessMove(myPosition, possibleMove, null));
-                }
+                moveList.addAll(pawnAddMove(myPosition, possibleMove));
             }
         }
 
@@ -126,17 +121,25 @@ public class ChessPiece {
         if (checkInBounds(possibleMove)){
             if (board.getPiece(possibleMove) != null
                     && board.getPiece(possibleMove).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
-                if (possibleMove.getRow() == 8 || possibleMove.getRow() == 1){
-                    moveList.addAll(promotePawn(myPosition, possibleMove));
-                }
-                else{
-                    moveList.add(new ChessMove(myPosition, possibleMove, null));
-                }
+                moveList.addAll(pawnAddMove(myPosition, possibleMove));
             }
         }
 
         return moveList;
     }
+
+    private ArrayList<ChessMove> pawnAddMove(ChessPosition myPosition, ChessPosition possibleMove){
+        ArrayList<ChessMove> moveList = new ArrayList<>();
+        if (possibleMove.getRow() == 8 || possibleMove.getRow() == 1){
+            moveList.addAll(promotePawn(myPosition, possibleMove));
+        }
+        else{
+            moveList.add(new ChessMove(myPosition, possibleMove, null));
+        }
+
+        return moveList;
+    }
+
     private ArrayList<ChessMove> promotePawn(ChessPosition myPosition, ChessPosition possibleMove) {
         ArrayList<ChessMove> moveList = new ArrayList<>();
         moveList.add(new ChessMove(myPosition, possibleMove, PieceType.ROOK));
@@ -259,8 +262,12 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o){
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
         ChessPiece that = (ChessPiece) o;
         return color == that.color && currentType == that.currentType;
     }

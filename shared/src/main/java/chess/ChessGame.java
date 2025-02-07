@@ -234,20 +234,25 @@ public class ChessGame {
         ArrayList<ChessMove> tempCount;
         tempCount = new ArrayList<>();
         if (isInCheck(teamColor)){
-            for (int i = 1; i < 9; i++){
-                for (int j = 1; j < 9; j++){
-                    if (myBoard.getPiece(new ChessPosition(i,j)) != null) {
-                        if (myBoard.getPiece(new ChessPosition(i, j)).getTeamColor() == teamColor) {
-                            tempCount.addAll(validMoves(new ChessPosition(i, j)));
-                        }
+            tempCount.addAll(scanBoard(tempCount, teamColor));
+            return tempCount.isEmpty();
+        }
+        return false;
+    }
+
+
+    private ArrayList<ChessMove> scanBoard(ArrayList<ChessMove> tempCount,TeamColor color){
+        for (int i = 1; i < 9; i++){
+            for (int j = 1; j < 9; j++){
+                if (myBoard.getPiece(new ChessPosition(i,j)) != null) {
+                    if (myBoard.getPiece(new ChessPosition(i, j)).getTeamColor() == color) {
+                        tempCount.addAll(validMoves(new ChessPosition(i, j)));
                     }
                 }
             }
-            if (tempCount.isEmpty()){
-                return true;
-            }
         }
-        return false;
+
+        return tempCount;
     }
 
     /**
@@ -261,19 +266,8 @@ public class ChessGame {
         ArrayList<ChessMove> tempCount;
         tempCount = new ArrayList<>();
         if (!isInCheck(teamColor)){
-            for (int i = 1; i < 9; i++){
-                for (int j = 1; j < 9; j++){
-                    if (myBoard.getPiece(new ChessPosition(i,j)) != null) {
-                        if (myBoard.getPiece(new ChessPosition(i, j)).getTeamColor() == teamColor) {
-                            tempCount.addAll(validMoves(new ChessPosition(i, j)));
-
-                        }
-                    }
-                }
-            }
-            if (tempCount.isEmpty()){
-                return true;
-            }
+            tempCount.addAll(scanBoard(tempCount, teamColor));
+            return tempCount.isEmpty();
         }
         return false;
     }
