@@ -34,29 +34,6 @@ public class ServerFacade {
 
 
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
 
-
-        return null;
-    }
-
-
-    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
-
-    }
-
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
-
-    }
-
-    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
-
-
-        return null;
-    }
-
-    private boolean isSuccessful(int status) {
-        return status / 100 == 2;
-    }
 
 }
