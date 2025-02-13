@@ -2,8 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 
-import model.RegisterUser;
-import model.UserData;
+import model.*;
 import ui.ResponseException;
 
 import java.io.IOException;
@@ -25,18 +24,41 @@ public class ServerFacade {
 
     public UserData registerUser(RegisterUser newUser) throws ResponseException {
 
-        UserData registeredUser = makeRequest("post","/user", newUser, UserData.class);
-
-        return registeredUser;
+        return this.makeRequest("POST","/user", newUser, UserData.class, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass)
+    public UserData loginUser(LoginUser returningUser) throws ResponseException {
+
+        return this.makeRequest("POST","/session", returningUser, UserData.class, null);
+    }
+
+    public void logoutUser(String authToken) throws ResponseException {
+        this.makeRequest("DELETE", "/session", null, null, authToken);
+    }
+
+    public GameID createGame(GameName gameName, String authToken) throws ResponseException {
+        return this.makeRequest("POST", "/game", gameName, GameID.class, authToken);
+    }
+
+    public GameList listGames(String authToken) throws ResponseException {
+        return this.makeRequest("GET", "/game", null, GameList.class, authToken);
+    }
+
+    public void playGame(JoinRequest joinRequest, String authToken) throws ResponseException {
+        this.makeRequest("PUT", "/game", joinRequest, null, authToken);
+    }
+
+
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken)
             throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+            if (authToken != null){
+                http.setRequestProperty("authorization", authToken);
+            }
 
             writeBody(request, http);
             http.connect();
