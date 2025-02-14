@@ -15,10 +15,23 @@ public class ChessClient {
     private String authToken;
     private HashMap<Integer, GameID> IDMap = new HashMap<>();
 
-    public ChessClient(String serverUrl){
+    public ChessClient(String serverUrl) {
         this.serverURL = serverUrl;
         this.server = new ServerFacade(serverUrl);
+        //initializeMap();
     }
+
+    private void initializeMap() throws ResponseException {
+        int gameNumber = 1;
+        GameList gameList = server.listGames(authToken);
+
+        for (GameResult game: gameList.games()){
+            GameID gameID = new GameID(game.gameID());
+            IDMap.put(gameNumber, gameID);
+            gameNumber++;
+        }
+    }
+
 
     public String eval(String input) {
         try {
