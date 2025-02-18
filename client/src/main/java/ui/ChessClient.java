@@ -18,20 +18,7 @@ public class ChessClient {
     public ChessClient(String serverUrl) {
         this.serverURL = serverUrl;
         this.server = new ServerFacade(serverUrl);
-        //initializeMap();
     }
-
-    private void initializeMap() throws ResponseException {
-        int gameNumber = 1;
-        GameList gameList = server.listGames(authToken);
-
-        for (GameResult game: gameList.games()){
-            GameID gameID = new GameID(game.gameID());
-            IDMap.put(gameNumber, gameID);
-            gameNumber++;
-        }
-    }
-
 
     public String eval(String input) {
         try {
