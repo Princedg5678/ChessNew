@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 
 public class ServerFacadeTests {
@@ -141,29 +142,64 @@ public class ServerFacadeTests {
     @Test
     @Order(9)
     @DisplayName("list")
-    public void list() throws ResponseException {
+    public void list() throws ResponseException, DataAccessException {
+        clearData();
+        RegisterUser registerUser = new RegisterUser("1","2","3");
+        UserData newUser = serverFacade.registerUser(registerUser);
+        serverFacade.createGame(new GameName("testName1"), newUser.authToken());
+        serverFacade.createGame(new GameName("testName2"), newUser.authToken());
+
+        GameList gameList = serverFacade.listGames(newUser.authToken());
+        assertEquals(2, gameList.games().size());
 
     }
 
     @Test
     @Order(10)
     @DisplayName("listFail")
-    public void listFail() throws ResponseException {
+    public void listFail() throws ResponseException, DataAccessException {
+        clearData();
+        RegisterUser registerUser = new RegisterUser("1","2","3");
+        UserData newUser = serverFacade.registerUser(registerUser);
+        serverFacade.createGame(new GameName("testName1"), newUser.authToken());
 
+        assertThrows(ResponseException.class, () -> serverFacade.listGames(null));
     }
 
     @Test
     @Order(11)
     @DisplayName("play")
-    public void play() throws ResponseException {
+    public void play() throws ResponseException, DataAccessException {
+        clearData();
+        RegisterUser registerUser = new RegisterUser("1","2","3");
+        UserData newUser = serverFacade.registerUser(registerUser);
+        serverFacade.createGame(new GameName("testName1"), newUser.authToken());
+        GameList gameList = serverFacade.listGames(newUser.authToken());
+        ArrayList<GameResult> games = gameList.games();
+        Integer gameID = games.get(0).gameID();
+        JoinRequest joinRequest = new JoinRequest("WHITE", gameID);
 
+        serverFacade.playGame(joinRequest, newUser.authToken());
+        gameList = serverFacade.listGames(newUser.authToken());
+        games = gameList.games();
+        assertEquals("1", games.get(0).whiteUsername());
     }
 
     @Test
     @Order(12)
     @DisplayName("playFail")
-    public void playFail() throws ResponseException {
+    public void playFail() throws ResponseException, DataAccessException {
+        clearData();
+        RegisterUser registerUser = new RegisterUser("1","2","3");
+        UserData newUser = serverFacade.registerUser(registerUser);
+        serverFacade.createGame(new GameName("testName1"), newUser.authToken());
+        GameList gameList = serverFacade.listGames(newUser.authToken());
+        ArrayList<GameResult> games = gameList.games();
+        Integer gameID = games.get(0).gameID();
+        JoinRequest joinRequest = new JoinRequest("WHITE", gameID);
 
+        serverFacade.playGame(joinRequest, newUser.authToken());
+        assertThrows(ResponseException.class, () -> serverFacade.playGame(joinRequest, newUser.authToken()));
     }
 
 }
