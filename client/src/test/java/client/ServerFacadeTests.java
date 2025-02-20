@@ -73,7 +73,7 @@ public class ServerFacadeTests {
     @Test
     @Order(3)
     @DisplayName("Logout")
-    public void Logout() throws ResponseException, DataAccessException {
+    public void logout() throws ResponseException, DataAccessException {
         clearData();
         RegisterUser registerUser = new RegisterUser("1","2","3");
         UserData newUser = serverFacade.registerUser(registerUser);
@@ -86,7 +86,7 @@ public class ServerFacadeTests {
     @Test
     @Order(4)
     @DisplayName("LogoutFail")
-    public void LogoutFail() throws ResponseException, DataAccessException {
+    public void logoutFail() throws ResponseException, DataAccessException {
         clearData();
         RegisterUser registerUser = new RegisterUser("1","2","3");
         UserData newUser = serverFacade.registerUser(registerUser);

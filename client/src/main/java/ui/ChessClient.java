@@ -14,7 +14,7 @@ public class ChessClient {
     private State currentState = State.SIGNEDOUT;
     private final ServerFacade server;
     private String authToken;
-    private HashMap<Integer, GameID> IDMap = new HashMap<>();
+    private final HashMap<Integer, GameID> IDMap = new HashMap<>();
 
     public ChessClient(String serverUrl) {
         this.serverURL = serverUrl;
