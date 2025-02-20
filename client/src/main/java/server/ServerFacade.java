@@ -84,7 +84,7 @@ public class ServerFacade {
         var status = http.getResponseCode();
         if (!isSuccessful(status)){
             if (status == 401){
-                throw new ResponseException("Error: already taken");
+                throw new ResponseException("Error: unauthorized");
             }
             else if (status == 400){
                 throw new ResponseException("Error: bad request");
