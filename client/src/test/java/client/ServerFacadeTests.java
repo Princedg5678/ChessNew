@@ -15,8 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 
@@ -65,7 +63,7 @@ public class ServerFacadeTests {
     @Test
     @Order(2)
     @DisplayName("RegisterFail")
-    public void registerFail() throws ResponseException, DataAccessException {
+    public void registerFail() throws DataAccessException {
         clearData();
         RegisterUser registerUser = new RegisterUser("","2","3");
         assertThrows(ResponseException.class, () -> serverFacade.registerUser(registerUser));
@@ -113,7 +111,7 @@ public class ServerFacadeTests {
     @Test
     @Order(6)
     @DisplayName("LoginFail")
-    public void loginFail() throws ResponseException {
+    public void loginFail() {
         assertThrows(ResponseException.class, () -> serverFacade.loginUser(new LoginUser("4","5")));
     }
 
