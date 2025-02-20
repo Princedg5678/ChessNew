@@ -14,7 +14,7 @@ public class ChessClient {
     private State currentState = State.SIGNEDOUT;
     private final ServerFacade server;
     private String authToken;
-    private final HashMap<Integer, GameID> IDMap = new HashMap<>();
+    private HashMap<Integer, GameID> IdMap = new HashMap<>();
 
     public ChessClient(String serverUrl) {
         this.serverURL = serverUrl;
@@ -128,9 +128,9 @@ public class ChessClient {
         String tempName = params[0];
         GameName gameName = new GameName(tempName);
         GameID gameID = server.createGame(gameName, authToken);
-        Integer gameNumber = IDMap.size() + 1;
+        Integer gameNumber = IdMap.size() + 1;
 
-        IDMap.put(gameNumber, gameID);
+        IdMap.put(gameNumber, gameID);
 
 
         return "Game successfully created. Game Number is " + gameNumber;
@@ -148,7 +148,7 @@ public class ChessClient {
         for (GameResult game: gameList.games()){
 
             GameID gameID = new GameID(game.gameID());
-            IDMap.put(gameNumber, gameID);
+            IdMap.put(gameNumber, gameID);
 
             returnString.append(gameNumber).append(". \n");
             returnString.append("Game Name: ").append(game.gameName()).append("\n");
@@ -171,7 +171,7 @@ public class ChessClient {
         }
 
         Integer gameNumber = Integer.parseInt(params[0]);
-        if (!IDMap.containsKey(gameNumber)){
+        if (!IdMap.containsKey(gameNumber)){
             throw new ResponseException("Error: Game does not exist");
         }
         String playerColor = params[1];
@@ -179,7 +179,7 @@ public class ChessClient {
             throw new ResponseException("Error: Invalid Color");
         }
 
-        GameID gameID = IDMap.get(gameNumber);
+        GameID gameID = IdMap.get(gameNumber);
         JoinRequest joinRequest = new JoinRequest(playerColor, gameID.gameID());
 
         server.playGame(joinRequest, authToken);
@@ -205,7 +205,7 @@ public class ChessClient {
         }
 
         Integer gameNumber = Integer.parseInt(params[0]);
-        GameID gameID = IDMap.get(gameNumber);
+        GameID gameID = IdMap.get(gameNumber);
         GameList gameList = server.listGames(authToken);
 
         //GameResult does not actually contain a ChessGame. Find a way to fix that. New ChessGame is placeholder
