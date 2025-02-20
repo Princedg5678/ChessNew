@@ -83,7 +83,18 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)){
-            throw new ResponseException("failure: " + status);
+            if (status == 401){
+                throw new ResponseException("Error: already taken");
+            }
+            else if (status == 400){
+                throw new ResponseException("Error: bad request");
+            }
+            else if (status == 403){
+                throw new ResponseException("Error: already taken");
+            }
+            else {
+                throw new ResponseException("Error: something went wrong");
+            }
         }
     }
 
