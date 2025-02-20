@@ -6,6 +6,7 @@ import server.ServerFacade;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ChessClient {
 
@@ -211,8 +212,9 @@ public class ChessClient {
 
         for (GameResult game: gameList.games()){
             GameID tempID = new GameID(game.gameID());
-            if (gameID == tempID){
+            if (Objects.equals(gameID, tempID)){
               PrintBoard.printWhitePerspective(new ChessGame());
+              return "Game Found! Observing game " + gameNumber;
             }
         }
 

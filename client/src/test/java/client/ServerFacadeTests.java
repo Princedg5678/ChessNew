@@ -200,4 +200,5 @@ public class ServerFacadeTests {
         assertThrows(ResponseException.class, () -> serverFacade.playGame(joinRequest, newUser.authToken()));
     }
 
+
 }
