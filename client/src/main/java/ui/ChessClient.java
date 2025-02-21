@@ -170,7 +170,15 @@ public class ChessClient {
             throw new ResponseException("Error: Expected <gameNumber> <color>");
         }
 
-        Integer gameNumber = Integer.parseInt(params[0]);
+        Integer gameNumber;
+
+        try {
+            gameNumber = Integer.parseInt(params[0]);
+        } catch (NumberFormatException ex) {
+            throw new ResponseException("Error: Expected <gameNumber> <color>");
+        }
+
+
         if (!idMap.containsKey(gameNumber)){
             throw new ResponseException("Error: Game does not exist");
         }
