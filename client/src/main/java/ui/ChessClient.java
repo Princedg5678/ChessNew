@@ -3,6 +3,8 @@ package ui;
 import chess.ChessGame;
 import model.*;
 import server.ServerFacade;
+import websocket.WebSocketFacade;
+import websocket.ServerMessageHandler;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,12 +15,15 @@ public class ChessClient {
     private final String serverURL;
     private State currentState = State.SIGNEDOUT;
     private final ServerFacade server;
+    private final ServerMessageHandler sms;
+    private WebSocketFacade ws;
     private String authToken;
     private HashMap<Integer, GameID> idMap = new HashMap<>();
 
-    public ChessClient(String serverUrl) {
+    public ChessClient(String serverUrl, ServerMessageHandler serverMessageHandler) {
         this.serverURL = serverUrl;
         this.server = new ServerFacade(serverUrl);
+        this.sms = serverMessageHandler;
     }
 
     public String eval(String input) {
@@ -188,6 +193,7 @@ public class ChessClient {
         }
 
         GameID gameID = idMap.get(gameNumber);
+        ws = new WebSocketFacade(serverURL, sms);
         JoinRequest joinRequest = new JoinRequest(playerColor, gameID.gameID());
 
         server.playGame(joinRequest, authToken);

@@ -1,15 +1,18 @@
 package ui;
 
+import websocket.ServerMessageHandler;
+import websocket.messages.ServerMessage;
+
 import java.util.Arrays;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class Repl {
+public class Repl implements ServerMessageHandler {
     private final ChessClient client;
 
     public Repl(String serverURL) {
-        client = new ChessClient(serverURL/*, this*/);
+        client = new ChessClient(serverURL, this);
     }
 
     public void run(){
@@ -32,5 +35,16 @@ public class Repl {
     }
 
 
+    @Override
+    public void notify(ServerMessage serverMessage) {
+        if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
 
+        }
+        else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
+
+        }
+        else {
+
+        }
+    }
 }
