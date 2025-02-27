@@ -193,10 +193,11 @@ public class ChessClient {
         }
 
         GameID gameID = idMap.get(gameNumber);
-        ws = new WebSocketFacade(serverURL, sms);
         JoinRequest joinRequest = new JoinRequest(playerColor, gameID.gameID());
 
         server.playGame(joinRequest, authToken);
+        ws = new WebSocketFacade(serverURL, sms);
+        ws.playGame();
         if (playerColor.equalsIgnoreCase("WHITE")){
             PrintBoard.printWhitePerspective(new ChessGame());
         }
