@@ -14,10 +14,10 @@ import java.util.Timer;
 @WebSocket
 public class WebSocketHandler {
 
-    SQLAuthDAO authDAO;
+    AuthDAO authDAO;
     String username;
 
-    public WebSocketHandler(SQLAuthDAO authDAO){
+    public WebSocketHandler(AuthDAO authDAO){
         this.authDAO = authDAO;
     }
 
@@ -30,14 +30,17 @@ public class WebSocketHandler {
         String authToken = userGameCommand.getAuthToken();
         username = authDAO.getUsername(authToken);
         switch (userGameCommand.getCommandType()){
-//            case CONNECT -> ;
+            case CONNECT -> connect(username, authToken, userGameCommand.getColor(),
+                    userGameCommand.getGameID(), session);
 //            case MAKE_MOVE -> ;
 //            case LEAVE -> ;
 //            case RESIGN -> ;
         }
     }
 
-    private void connect(String username, String authToken, String playerColor, Integer gameID){
+    private void connect(String username, String authToken, String playerColor,
+                         Integer gameID, Session session){
+        connectionManager.add(gameID, username, session);
 
     }
 

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import model.*;
 import model.Error;
+import server.websocket.WebSocketHandler;
 import service.GameService;
 import service.UserService;
 import service.ClearDataService;
@@ -17,6 +18,8 @@ public class Server {
     AuthDAO authDao = new MemoryAuthDAO();
     GameDAO gameDao = new MemoryGameDAO();
     UserDAO userDao = new MemoryUserDAO();
+
+    WebSocketHandler ws;
 
     UserService userService;
     GameService gameService;
@@ -32,6 +35,8 @@ public class Server {
             System.out.println(e.getMessage());
         }
 
+        ws = new WebSocketHandler(authDao);
+
         userService = new UserService(authDao, userDao);
         gameService = new GameService(authDao, gameDao);
         clearService = new ClearDataService(authDao, gameDao, userDao);
@@ -43,6 +48,8 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.webSocket("/ws", ws);
+
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);

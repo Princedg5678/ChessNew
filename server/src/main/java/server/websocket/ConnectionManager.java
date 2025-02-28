@@ -10,20 +10,28 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
 
-    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Integer, ArrayList<Connection>> connections = new ConcurrentHashMap<>();
 
-    public void add(String username, Session session) {
+    public void add(Integer gameID, String username, Session session) {
         Connection connection = new Connection(username, session);
-        connections.put(username, connection);
+        if (!connections.containsKey(gameID)){
+            ArrayList<Connection> connectionList = new ArrayList<>();
+            connectionList.add(connection);
+            connections.put(gameID, connectionList);
+        }
+        else {
+            connections.get(gameID).add(connection);
+        }
     }
 
-    public void remove(String username){
-        connections.remove(username);
+    public void remove(Integer gameID){
+        connections.remove(gameID);
     }
 
-    public void broadcast(String excludedUser, ServerMessage serverMessage) throws IOException {
+    public void broadcast(String excludedUser,
+                          ServerMessage serverMessage, Integer gameID) throws IOException {
         var removeList = new ArrayList<Connection>();
-        for (Connection c: connections.values()){
+        for (Connection c: connections.get(gameID)){
             if (c.session.isOpen()){
                 if (!c.username.equals(excludedUser)) {
                     c.send(serverMessage.toString());
@@ -35,7 +43,7 @@ public class ConnectionManager {
         }
 
         for (Connection c: removeList){
-            connections.remove(c.username);
+            connections.get(gameID).remove(c);
         }
     }
 
