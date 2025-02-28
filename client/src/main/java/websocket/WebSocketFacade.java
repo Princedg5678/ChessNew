@@ -45,7 +45,7 @@ public class WebSocketFacade extends Endpoint{
     public void playGame(Integer gameID, String playerColor, String authToken) throws ResponseException {
         try {
             UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT,
-                    authToken, gameID);
+                    authToken, gameID, playerColor);
             this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());
