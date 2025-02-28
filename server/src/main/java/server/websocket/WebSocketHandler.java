@@ -1,10 +1,12 @@
 package server.websocket;
 
+import chess.ChessGame;
 import dataaccess.*;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
 
@@ -41,7 +43,10 @@ public class WebSocketHandler {
     private void connect(String username, String authToken, String playerColor,
                          Integer gameID, Session session){
         connectionManager.add(gameID, username, session);
+        LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, new ChessGame());
 
     }
+
+    //Replace the new chessGame with one in the database.
 
 }

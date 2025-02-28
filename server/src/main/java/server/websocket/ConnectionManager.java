@@ -47,4 +47,8 @@ public class ConnectionManager {
         }
     }
 
+    public void broadcastToRoot(){
+
+    }
+
 }
