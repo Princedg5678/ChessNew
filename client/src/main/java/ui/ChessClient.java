@@ -197,15 +197,7 @@ public class ChessClient {
 
         server.playGame(joinRequest, authToken);
         ws = new WebSocketFacade(serverURL, sms);
-        ws.playGame();
-        if (playerColor.equalsIgnoreCase("WHITE")){
-            PrintBoard.printWhitePerspective(new ChessGame());
-        }
-        else {
-            PrintBoard.printBlackPerspective(new ChessGame());
-        }
-
-        //the new ChessGame is a placeholder
+        ws.playGame(gameID.gameID(), playerColor, authToken);
 
         return "Game Joined. Have Fun!";
     }

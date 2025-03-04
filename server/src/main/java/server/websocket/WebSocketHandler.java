@@ -43,11 +43,11 @@ public class WebSocketHandler {
     }
 
     private void connect(String username, String authToken, String playerColor,
-                         Integer gameID, Session session) throws DataAccessException {
+                         Integer gameID, Session session) throws DataAccessException, IOException {
         connectionManager.add(gameID, username, session);
         LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                 gameDAO.findGame(gameID).game(), playerColor);
-
+        connectionManager.broadcastToRoot(gameMessage, gameID, username);
     }
 
 }
