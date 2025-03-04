@@ -1,6 +1,7 @@
 package server.websocket;
 
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
 
@@ -47,8 +48,14 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcastToRoot(){
-
+    public void broadcastToRoot(LoadGameMessage gameMessage, Integer gameID, String username) throws IOException {
+        for (Connection c: connections.get(gameID)) {
+            if (c.session.isOpen()) {
+                if (c.username.equals(username)) {
+                    c.send(gameMessage.toString());
+                }
+            }
+        }
     }
 
 }

@@ -1,7 +1,11 @@
 package ui;
 
+import com.google.gson.Gson;
 import websocket.ServerMessageHandler;
+import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
+import ui.PrintBoard;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -36,9 +40,16 @@ public class Repl implements ServerMessageHandler {
 
 
     @Override
-    public void notify(ServerMessage serverMessage) {
+    public void notify(String stringMessage) {
+        ServerMessage serverMessage = new Gson().fromJson(stringMessage, ServerMessage.class);
         if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-
+            LoadGameMessage gameMessage = new Gson().fromJson(stringMessage, LoadGameMessage.class);
+            if (gameMessage.getColor().equalsIgnoreCase("WHITE")){
+                PrintBoard.printWhitePerspective(gameMessage.getGame());
+            }
+            else {
+                PrintBoard.printBlackPerspective(gameMessage.getGame());
+            }
         }
         else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
 

@@ -35,7 +35,7 @@ public class Server {
             System.out.println(e.getMessage());
         }
 
-        ws = new WebSocketHandler(authDao);
+        ws = new WebSocketHandler(authDao, gameDao);
 
         userService = new UserService(authDao, userDao);
         gameService = new GameService(authDao, gameDao);

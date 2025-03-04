@@ -17,10 +17,12 @@ import java.util.Timer;
 public class WebSocketHandler {
 
     AuthDAO authDAO;
+    GameDAO gameDAO;
     String username;
 
-    public WebSocketHandler(AuthDAO authDAO){
+    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO){
         this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
     }
 
     private final ConnectionManager connectionManager = new ConnectionManager();
@@ -41,12 +43,11 @@ public class WebSocketHandler {
     }
 
     private void connect(String username, String authToken, String playerColor,
-                         Integer gameID, Session session){
+                         Integer gameID, Session session) throws DataAccessException {
         connectionManager.add(gameID, username, session);
-        LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, new ChessGame());
+        LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                gameDAO.findGame(gameID).game(), playerColor);
 
     }
-
-    //Replace the new chessGame with one in the database.
 
 }
