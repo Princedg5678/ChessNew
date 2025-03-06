@@ -31,16 +31,32 @@ public class ChessClient {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd) {
-                case "login" -> login(params);
-                case "register" -> register(params);
-                case "logout" -> logout();
-                case "create" -> create(params);
-                case "list" -> list();
-                case "play" -> play(params);
-                case "observe" -> observe(params);
-                default -> help();
-            };
+            if (currentState == State.SIGNEDOUT){
+                return switch (cmd) {
+                    case "login" -> login(params);
+                    case "register" -> register(params);
+                    default -> help();
+                };
+            }
+            else if (currentState == State.SIGNEDIN) {
+                return switch (cmd) {
+                    case "logout" -> logout();
+                    case "create" -> create(params);
+                    case "list" -> list();
+                    case "play" -> play(params);
+                    case "observe" -> observe(params);
+                    default -> help();
+                };
+            } else if (currentState == State.PLAYINGGAME) {
+                return switch (cmd) {
+                    case "move" -> ;
+                    case "redraw" -> ;
+                    case "highlight" -> ;
+                    case "resign" -> ;
+                    case "leave" -> ;
+                    default -> help();
+                };
+            }
         } catch (Exception ex) {
             return ex.getMessage();
         }
@@ -53,6 +69,16 @@ public class ChessClient {
                     - login <username> <password>
                     - help
                     - quit
+                    """;
+        }
+        else if (currentState == State.PLAYINGGAME){
+            return """
+                    - redraw
+                    - move <piece> <space>
+                    - highlight <piece>
+                    - help
+                    - resign
+                    - leave
                     """;
         }
         return """
@@ -170,6 +196,9 @@ public class ChessClient {
         if (currentState == State.SIGNEDOUT){
             throw new ResponseException("Error: Not Logged in");
         }
+        else if (currentState == State.PLAYINGGAME){
+            throw new ResponseException("Error: Already In Game");
+        }
 
         if (params.length < 2){
             throw new ResponseException("Error: Expected <gameNumber> <color>");
@@ -198,6 +227,7 @@ public class ChessClient {
         server.playGame(joinRequest, authToken);
         ws = new WebSocketFacade(serverURL, sms);
         ws.playGame(gameID.gameID(), playerColor, authToken);
+        currentState = State.PLAYINGGAME;
 
         return "Game Joined. Have Fun!";
     }
