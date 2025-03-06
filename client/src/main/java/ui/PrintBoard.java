@@ -90,6 +90,8 @@ public class PrintBoard {
         }
     }
 
+    //start of highlighting moves
+
     private static void printPiece(PrintStream out, ChessPiece piece){
         ChessGame.TeamColor color = piece.getTeamColor();
         ChessPiece.PieceType type = piece.getPieceType();

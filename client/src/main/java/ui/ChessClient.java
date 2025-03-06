@@ -228,8 +228,9 @@ public class ChessClient {
         ws = new WebSocketFacade(serverURL, sms);
         ws.playGame(gameID.gameID(), playerColor, authToken);
         currentState = State.PLAYINGGAME;
+        System.out.println("Game Joined. Have Fun!");
 
-        return "Game Joined. Have Fun!";
+        return help();
     }
 
     public String observe(String... params) throws ResponseException{

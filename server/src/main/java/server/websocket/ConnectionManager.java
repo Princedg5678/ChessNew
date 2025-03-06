@@ -1,5 +1,6 @@
 package server.websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
@@ -52,7 +53,7 @@ public class ConnectionManager {
         for (Connection c: connections.get(gameID)) {
             if (c.session.isOpen()) {
                 if (c.username.equals(username)) {
-                    c.send(gameMessage.toString());
+                    c.send(new Gson().toJson(gameMessage));
                 }
             }
         }

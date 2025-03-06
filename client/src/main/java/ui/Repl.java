@@ -41,21 +41,22 @@ public class Repl implements ServerMessageHandler {
 
     @Override
     public void notify(String stringMessage) {
-        ServerMessage serverMessage = new Gson().fromJson(stringMessage, ServerMessage.class);
-        if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            LoadGameMessage gameMessage = new Gson().fromJson(stringMessage, LoadGameMessage.class);
-            if (gameMessage.getColor().equalsIgnoreCase("WHITE")){
-                PrintBoard.printWhitePerspective(gameMessage.getGame());
-            }
-            else {
-                PrintBoard.printBlackPerspective(gameMessage.getGame());
-            }
-        }
-        else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
+        try {
+            ServerMessage serverMessage = new Gson().fromJson(stringMessage, ServerMessage.class);
+            if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+                LoadGameMessage gameMessage = new Gson().fromJson(stringMessage, LoadGameMessage.class);
+                if (gameMessage.getColor().equalsIgnoreCase("WHITE")) {
+                    PrintBoard.printWhitePerspective(gameMessage.getGame());
+                } else {
+                    PrintBoard.printBlackPerspective(gameMessage.getGame());
+                }
+            } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
 
-        }
-        else {
+            } else {
 
+            }
+        } catch (Exception e) {
+            System.err.println("Error");
         }
     }
 }
