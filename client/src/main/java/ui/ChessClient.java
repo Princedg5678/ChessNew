@@ -47,13 +47,13 @@ public class ChessClient {
                     case "observe" -> observe(params);
                     default -> help();
                 };
-            } else if (currentState == State.PLAYINGGAME) {
+            } else {
                 return switch (cmd) {
-                    case "move" -> ;
-                    case "redraw" -> ;
-                    case "highlight" -> ;
-                    case "resign" -> ;
-                    case "leave" -> ;
+                    case "move" -> move(params);
+                    case "redraw" -> redraw();
+                    case "highlight" -> highlight(params);
+                    case "resign" -> resign();
+                    case "leave" -> leave();
                     default -> help();
                 };
             }
@@ -254,6 +254,36 @@ public class ChessClient {
               return "Game Found! Observing game " + gameNumber;
             }
         }
+
+        return null;
+    }
+
+    public String move(String... params){
+
+
+        return null;
+    }
+
+    public String highlight(String... params){
+
+
+        return null;
+    }
+
+    public String redraw(){
+
+
+        return null;
+    }
+
+    public String resign(){
+
+
+        return null;
+    }
+
+    public String leave(){
+
 
         return null;
     }
