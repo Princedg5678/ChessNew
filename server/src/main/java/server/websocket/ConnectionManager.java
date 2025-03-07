@@ -36,7 +36,7 @@ public class ConnectionManager {
         for (Connection c: connections.get(gameID)){
             if (c.session.isOpen()){
                 if (!c.username.equals(excludedUser)) {
-                    c.send(serverMessage.toString());
+                    c.send(new Gson().toJson(serverMessage));
                 }
             }
             else {
