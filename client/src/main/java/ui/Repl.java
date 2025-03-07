@@ -51,9 +51,9 @@ public class Repl implements ServerMessageHandler {
                     PrintBoard.printBlackPerspective(gameMessage.getGame());
                 }
             } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
-
+                System.out.println(serverMessage.getMessage());
             } else {
-
+                System.out.println(serverMessage.getMessage());
             }
         } catch (Exception e) {
             System.err.println("Error");

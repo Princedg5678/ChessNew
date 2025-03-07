@@ -110,7 +110,7 @@ public class PrintBoard {
                      out.print(" P ");
                  }
                  else{
-                     out.print(" p ");
+                     out.print(" P ");
                  }
             }
             case ROOK -> {
@@ -118,7 +118,7 @@ public class PrintBoard {
                     out.print(" R ");
                 }
                 else{
-                    out.print(" r ");
+                    out.print(" R ");
                 }
             }
             case KNIGHT -> {
@@ -126,7 +126,7 @@ public class PrintBoard {
                     out.print(" N ");
                 }
                 else{
-                    out.print(" n ");
+                    out.print(" N ");
                 }
             }
             case BISHOP -> {
@@ -134,7 +134,7 @@ public class PrintBoard {
                     out.print(" B ");
                 }
                 else{
-                    out.print(" b ");
+                    out.print(" B ");
                 }
             }
             case QUEEN -> {
@@ -142,7 +142,7 @@ public class PrintBoard {
                     out.print(" Q ");
                 }
                 else{
-                    out.print(" q ");
+                    out.print(" Q ");
                 }
             }
             case KING -> {
@@ -150,7 +150,7 @@ public class PrintBoard {
                     out.print(" K ");
                 }
                 else{
-                    out.print(" k ");
+                    out.print(" K ");
                 }
             }
         }

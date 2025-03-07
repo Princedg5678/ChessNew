@@ -19,6 +19,7 @@ public class ChessClient {
     private WebSocketFacade ws;
     private String authToken;
     private HashMap<Integer, GameID> idMap = new HashMap<>();
+    private Integer currentGameID;
 
     public ChessClient(String serverUrl, ServerMessageHandler serverMessageHandler) {
         this.serverURL = serverUrl;
@@ -227,6 +228,7 @@ public class ChessClient {
         server.playGame(joinRequest, authToken);
         ws = new WebSocketFacade(serverURL, sms);
         ws.playGame(gameID.gameID(), playerColor, authToken);
+        currentGameID = gameID.gameID();
         currentState = State.PLAYINGGAME;
         System.out.println("Game Joined. Have Fun!");
 
@@ -246,20 +248,28 @@ public class ChessClient {
         GameID gameID = idMap.get(gameNumber);
         GameList gameList = server.listGames(authToken);
 
-        //GameResult does not actually contain a ChessGame. Find a way to fix that. New ChessGame is placeholder
+
 
         for (GameResult game: gameList.games()){
             GameID tempID = new GameID(game.gameID());
             if (Objects.equals(gameID, tempID)){
-              PrintBoard.printWhitePerspective(new ChessGame());
-              return "Game Found! Observing game " + gameNumber;
+
+                ws = new WebSocketFacade(serverURL, sms);
+                ws.observeGame(gameID.gameID(), authToken);
+
+                return "Game Found! Observing game " + gameNumber;
             }
         }
 
         return null;
     }
 
-    public String move(String... params){
+    public String move(String... params) throws ResponseException {
+        if (params.length < 2){
+            throw new ResponseException("Error: Expected <piece> <space>");
+        }
+
+        //work on this function
 
 
         return null;

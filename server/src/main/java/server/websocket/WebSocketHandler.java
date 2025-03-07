@@ -1,6 +1,7 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import dataaccess.*;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
@@ -45,12 +46,32 @@ public class WebSocketHandler {
     private void connect(String username, String authToken, String playerColor,
                          Integer gameID, Session session) throws DataAccessException, IOException {
         connectionManager.add(gameID, username, session);
-        LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                gameDAO.findGame(gameID).game(), playerColor, "You joined the game.");
-        connectionManager.broadcastToRoot(gameMessage, gameID, username);
-        ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
-                username + " has joined the game.");
-        connectionManager.broadcast(username, serverMessage, gameID);
+        if (playerColor != null) {
+            LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                    gameDAO.findGame(gameID).game(), playerColor, "You joined the game.");
+            connectionManager.broadcastToRoot(gameMessage, gameID, username);
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    username + " has joined the game as " + playerColor + ".");
+            connectionManager.broadcast(username, serverMessage, gameID);
+            //figure out why board is being compared in the test
+        }
+        else {
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    username + " has joined the game as an observer.");
+            connectionManager.broadcast(username, serverMessage, gameID);
+        }
+
+    }
+
+    private void makeMove(ChessPosition startPosition, ChessPosition endPosition){
+
+    }
+
+    private void leave(){
+
+    }
+
+    private void resign(){
 
     }
 
