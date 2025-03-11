@@ -1,6 +1,9 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import model.*;
 import server.ServerFacade;
 import websocket.WebSocketFacade;
@@ -20,6 +23,7 @@ public class ChessClient {
     private String authToken;
     private HashMap<Integer, GameID> idMap = new HashMap<>();
     private Integer currentGameID;
+    private ChessGame.TeamColor currentColor;
 
     public ChessClient(String serverUrl, ServerMessageHandler serverMessageHandler) {
         this.serverURL = serverUrl;
@@ -75,7 +79,7 @@ public class ChessClient {
         else if (currentState == State.PLAYINGGAME){
             return """
                     - redraw
-                    - move <piece> <space>
+                    - move <piece> <space> <promotion>
                     - highlight <piece>
                     - help
                     - resign
@@ -222,12 +226,22 @@ public class ChessClient {
             throw new ResponseException("Error: Invalid Color");
         }
 
+
+
         GameID gameID = idMap.get(gameNumber);
         JoinRequest joinRequest = new JoinRequest(playerColor, gameID.gameID());
 
         server.playGame(joinRequest, authToken);
         ws = new WebSocketFacade(serverURL, sms);
         ws.playGame(gameID.gameID(), playerColor, authToken);
+
+        if(playerColor.equalsIgnoreCase("WHITE")){
+            currentColor = ChessGame.TeamColor.WHITE;
+        }
+        else {
+            currentColor = ChessGame.TeamColor.BLACK;
+        }
+
         currentGameID = gameID.gameID();
         currentState = State.PLAYINGGAME;
         System.out.println("Game Joined. Have Fun!");
@@ -266,13 +280,58 @@ public class ChessClient {
 
     public String move(String... params) throws ResponseException {
         if (params.length < 2){
-            throw new ResponseException("Error: Expected <piece> <space>");
+            throw new ResponseException("Error: Expected <piece> <space> <promotion>");
         }
 
-        //work on this function
+        if (!params[0].matches("^[a-h][1-8]$") && !params[1].matches("^[a-h][1-8]$")){
+            throw new ResponseException("Error: Invalid Coordinates");
+        }
 
+        String tempStart = params[0];
+        String tempEnd = params[1];
+        ChessPiece.PieceType promotionPiece = null;
+
+        if (params.length == 3){
+            String TempPromotion = params[2];
+            if (TempPromotion.equalsIgnoreCase("ROOK")){
+                promotionPiece = ChessPiece.PieceType.ROOK;
+            }
+            else if (TempPromotion.equalsIgnoreCase("KNIGHT")){
+                promotionPiece = ChessPiece.PieceType.KNIGHT;
+            }
+            else if (TempPromotion.equalsIgnoreCase("BISHOP")){
+                promotionPiece = ChessPiece.PieceType.BISHOP;
+            }
+            else if (TempPromotion.equalsIgnoreCase("QUEEN")){
+                promotionPiece = ChessPiece.PieceType.QUEEN;
+            }
+            else {
+                throw new ResponseException("Error: Invalid Promotion Piece");
+            }
+        }
+
+        char rowNumber = tempStart.charAt(0);
+        char colNumber = tempStart.charAt(1);
+
+        ChessPosition startPosition = new ChessPosition(convertLetterToNumber(rowNumber),
+                Integer.parseInt(String.valueOf(colNumber)));
+
+        rowNumber = tempEnd.charAt(0);
+        colNumber = tempEnd.charAt(1);
+
+        ChessPosition endPosition = new ChessPosition(convertLetterToNumber(rowNumber),
+                Integer.parseInt(String.valueOf(colNumber)));
+
+        ChessMove newMove = new ChessMove(startPosition, endPosition, promotionPiece);
+
+        //connect function to websocket
 
         return null;
+    }
+
+    public int convertLetterToNumber(char letter){
+        letter = Character.toLowerCase(letter);
+        return letter - 'a' + 1;
     }
 
     public String highlight(String... params){
