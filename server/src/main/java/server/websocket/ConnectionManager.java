@@ -49,11 +49,17 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcastToRoot(LoadGameMessage gameMessage, Integer gameID, String username) throws IOException {
+    public void broadcastToRoot(ServerMessage userMessage, LoadGameMessage gameMessage,
+                                Integer gameID, String username) throws IOException {
         for (Connection c: connections.get(gameID)) {
             if (c.session.isOpen()) {
                 if (c.username.equals(username)) {
-                    c.send(new Gson().toJson(gameMessage));
+                    if (userMessage == null) {
+                        c.send(new Gson().toJson(gameMessage));
+                    }
+                    else {
+                        c.send(new Gson().toJson(userMessage));
+                    }
                 }
             }
         }

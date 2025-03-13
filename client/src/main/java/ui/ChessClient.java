@@ -23,7 +23,7 @@ public class ChessClient {
     private String authToken;
     private HashMap<Integer, GameID> idMap = new HashMap<>();
     private Integer currentGameID;
-    private ChessGame.TeamColor currentColor;
+    private String currentColor;
 
     public ChessClient(String serverUrl, ServerMessageHandler serverMessageHandler) {
         this.serverURL = serverUrl;
@@ -236,10 +236,10 @@ public class ChessClient {
         ws.playGame(gameID.gameID(), playerColor, authToken);
 
         if(playerColor.equalsIgnoreCase("WHITE")){
-            currentColor = ChessGame.TeamColor.WHITE;
+            currentColor = "WHITE";
         }
         else {
-            currentColor = ChessGame.TeamColor.BLACK;
+            currentColor = "BLACK";
         }
 
         currentGameID = gameID.gameID();
@@ -323,8 +323,8 @@ public class ChessClient {
                 Integer.parseInt(String.valueOf(colNumber)));
 
         ChessMove newMove = new ChessMove(startPosition, endPosition, promotionPiece);
+        ws.makeMove(newMove, currentGameID, currentColor, authToken);
 
-        //connect function to websocket
 
         return null;
     }

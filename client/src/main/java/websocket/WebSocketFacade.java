@@ -1,8 +1,11 @@
 package websocket;
 
+import chess.ChessGame;
+import chess.ChessMove;
 import model.GameID;
 import ui.ResponseException;
 import com.google.gson.Gson;
+import websocket.commands.MoveCommand;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
 
@@ -56,6 +59,17 @@ public class WebSocketFacade extends Endpoint{
             UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT,
                     authToken, gameID, null);
             this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
+        } catch (IOException ex) {
+            throw new ResponseException(ex.getMessage());
+        }
+    }
+
+    public void makeMove(ChessMove newMove, Integer currentID,
+                         String currentColor, String authToken) throws ResponseException {
+        try{
+            MoveCommand moveCommand = new MoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, currentID,
+                    currentColor, newMove);
+            this.session.getBasicRemote().sendText(new Gson().toJson(moveCommand));
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());
         }
