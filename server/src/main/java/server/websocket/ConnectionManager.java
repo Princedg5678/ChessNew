@@ -49,6 +49,25 @@ public class ConnectionManager {
         }
     }
 
+    public void broadcastGame(String excludedUser,
+                              LoadGameMessage gameMessage, Integer gameID) throws IOException {
+        var removeList = new ArrayList<Connection>();
+        for (Connection c: connections.get(gameID)){
+            if (c.session.isOpen()){
+                if (!c.username.equals(excludedUser)) {
+                    c.send(new Gson().toJson(gameMessage));
+                }
+            }
+            else {
+                removeList.add(c);
+            }
+        }
+
+        for (Connection c: removeList){
+            connections.get(gameID).remove(c);
+        }
+    }
+
     public void broadcastToRoot(ServerMessage userMessage, LoadGameMessage gameMessage,
                                 Integer gameID, String username) throws IOException {
         for (Connection c: connections.get(gameID)) {

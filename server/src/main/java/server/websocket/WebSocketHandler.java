@@ -67,7 +67,6 @@ public class WebSocketHandler {
     }
 
     private void makeMove(MoveCommand moveCommand) throws DataAccessException, IOException, InvalidMoveException {
-        String authToken = moveCommand.getAuthToken();
         Integer gameID = moveCommand.getGameID();
         String playerColor = moveCommand.getColor();
         ChessMove newMove = moveCommand.getMove();
@@ -79,6 +78,28 @@ public class WebSocketHandler {
 
         try {
             currentGame.makeMove(newMove);
+            gameDAO.updateGame(currentGame, gameID);
+            LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                    currentGame, playerColor, "Move Successful.");
+
+            if (playerColor.equalsIgnoreCase("WHITE")){
+                connectionManager.broadcastGame(gameDAO.findGame(gameID).blackUsername(), gameMessage, gameID);
+                gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                        currentGame, "BLACK", "Move Successful.");
+                connectionManager.broadcastToRoot(null, gameMessage, gameID,
+                        gameDAO.findGame(gameID).blackUsername());
+
+            }
+            else {
+                connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
+                gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                        currentGame, "WHITE", "Move Successful.");
+                connectionManager.broadcastGame(username, gameMessage, gameID);
+            }
+
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    username + " has made their move");
+            connectionManager.broadcast(username, serverMessage, gameID);
 
         } catch (InvalidMoveException e) {
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
@@ -86,7 +107,7 @@ public class WebSocketHandler {
             connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
         }
 
-
+        //work on this
     }
 
     private boolean checkTurn(String playerColor, Integer gameID) throws DataAccessException, IOException {
