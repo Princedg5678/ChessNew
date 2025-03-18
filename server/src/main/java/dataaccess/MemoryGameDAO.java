@@ -49,5 +49,12 @@ public class MemoryGameDAO implements GameDAO{
         gameMap.clear();
     }
 
+    public void updateGame(ChessGame game, int gameID){
+        GameData currentData = findGame(gameID);
+        GameData updatedData = new GameData(gameID, currentData.whiteUsername(), currentData.blackUsername(),
+                currentData.gameName(), game);
+        gameMap.replace(gameID, updatedData);
+    }
+
 
 }

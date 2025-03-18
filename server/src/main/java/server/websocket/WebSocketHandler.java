@@ -2,6 +2,7 @@ package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.*;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
@@ -30,7 +31,8 @@ public class WebSocketHandler {
 
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException,
+            InvalidMoveException {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         String authToken = userGameCommand.getAuthToken();
         username = authDAO.getUsername(authToken);
@@ -64,7 +66,7 @@ public class WebSocketHandler {
 
     }
 
-    private void makeMove(MoveCommand moveCommand) throws DataAccessException, IOException {
+    private void makeMove(MoveCommand moveCommand) throws DataAccessException, IOException, InvalidMoveException {
         String authToken = moveCommand.getAuthToken();
         Integer gameID = moveCommand.getGameID();
         String playerColor = moveCommand.getColor();
@@ -75,7 +77,14 @@ public class WebSocketHandler {
             return;
         }
 
-        //continue to work on function
+        try {
+            currentGame.makeMove(newMove);
+
+        } catch (InvalidMoveException e) {
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
+                    "Error: Invalid Moved");
+            connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
+        }
 
 
     }
