@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 import static ui.EscapeSequences.*;
@@ -14,39 +15,47 @@ public class PrintBoard {
 
 
     public static void main(String[] args){
-        printWhitePerspective(new ChessGame());
-        printBlackPerspective(new ChessGame());
+        printWhitePerspective(new ChessGame(), new ChessPosition(2, 1));
+        printBlackPerspective(new ChessGame(), null);
     }
 
-    public static void printWhitePerspective(ChessGame ourGame){
+    public static void printWhitePerspective(ChessGame ourGame, ChessPosition position){
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         drawTopOrBottomRow(out, true);
-        drawBoard(out, ourGame, true);
+        drawBoard(out, ourGame, true, position);
         drawTopOrBottomRow(out, true);
         out.print("\n");
 
     }
 
-    public static void printBlackPerspective(ChessGame ourGame){
+    public static void printBlackPerspective(ChessGame ourGame, ChessPosition position){
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         drawTopOrBottomRow(out, false);
-        drawBoard(out, ourGame, false);
+        drawBoard(out, ourGame, false, position);
         drawTopOrBottomRow(out, false);
         out.print("\n");
 
     }
 
-    private static void drawBoard(PrintStream out, ChessGame game, boolean whitePerspective){
+    private static void drawBoard(PrintStream out, ChessGame game, boolean whitePerspective, ChessPosition position){
 
         ChessBoard theBoard = game.getBoard();
+        ArrayList<ChessPosition> endPositions = new ArrayList<>();
+
+        if (position != null) {
+            Collection<ChessMove> possibleMoves = game.validMoves(position);
+            for (ChessMove move: possibleMoves){
+                endPositions.add(move.getEndPosition());
+            }
+        }
 
         if (whitePerspective) {
             for (int i = 8; i > 0; i--) {
                 printSide(i, out);
                 for (int j = 1; j < 9; j++) {
-                    printBoardRow(i, j, out, theBoard);
+                    printBoardRow(i, j, out, theBoard, endPositions);
                 }
                 printSide(i, out);
                 out.print(RESET_BG_COLOR);
@@ -57,7 +66,7 @@ public class PrintBoard {
             for (int i = 1; i < 9; i++) {
                 printSide(i, out);
                 for (int j = 8; j > 0; j--) {
-                    printBoardRow(i, j, out, theBoard);
+                    printBoardRow(i, j, out, theBoard, endPositions);
                 }
                 printSide(i, out);
                 out.print(RESET_BG_COLOR);
@@ -74,11 +83,25 @@ public class PrintBoard {
         out.print(" ");
     }
 
-    private static void printBoardRow(int row, int column, PrintStream out, ChessBoard board){
+    private static void printBoardRow(int row, int column, PrintStream out, ChessBoard board,
+                                      ArrayList<ChessPosition> possibleMoves){
+
+        ChessPosition position = new ChessPosition(row, column);
+
         if ((9 - row + column) % 2 == 0) {
-            out.print(SET_BG_COLOR_WHITE);
+            if (possibleMoves.contains(position)) {
+                out.print(SET_BG_COLOR_GREEN);
+            }
+            else {
+                out.print(SET_BG_COLOR_WHITE);
+            }
         } else {
-            out.print(SET_BG_COLOR_BLACK);
+            if (possibleMoves.contains(position)) {
+                out.print(SET_BG_COLOR_DARK_GREEN);
+            }
+            else {
+                out.print(SET_BG_COLOR_BLACK);
+            }
         }
 
         ChessPiece piece = board.getPiece(new ChessPosition(row, column));
@@ -89,8 +112,6 @@ public class PrintBoard {
             printPiece(out, piece);
         }
     }
-
-    //start of highlighting moves
 
     private static void printPiece(PrintStream out, ChessPiece piece){
         ChessGame.TeamColor color = piece.getTeamColor();

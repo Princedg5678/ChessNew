@@ -2,12 +2,14 @@ package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import dataaccess.*;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.commands.HighlightCommand;
 import websocket.commands.MoveCommand;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
@@ -41,6 +43,7 @@ public class WebSocketHandler {
             case CONNECT -> connect(username, userGameCommand.getColor(),
                     userGameCommand.getGameID(), session);
             case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MoveCommand.class));
+            case HIGHLIGHT -> highlight(new Gson().fromJson(message, HighlightCommand.class));
             case LEAVE -> leave();
             case RESIGN -> resign();
         }
@@ -51,7 +54,7 @@ public class WebSocketHandler {
         connectionManager.add(gameID, username, session);
         if (playerColor != null) {
             LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                    gameDAO.findGame(gameID).game(), playerColor, "You joined the game.");
+                    gameDAO.findGame(gameID).game(), playerColor, "You joined the game.", null);
             connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                     username + " has joined the game as " + playerColor + ".");
@@ -80,12 +83,12 @@ public class WebSocketHandler {
             currentGame.makeMove(newMove);
             gameDAO.updateGame(currentGame, gameID);
             LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                    currentGame, playerColor, "Move Successful.");
+                    currentGame, playerColor, "Move Successful.", null);
 
             if (playerColor.equalsIgnoreCase("WHITE")){
                 connectionManager.broadcastGame(gameDAO.findGame(gameID).blackUsername(), gameMessage, gameID);
                 gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                        currentGame, "BLACK", "Move Successful.");
+                        currentGame, "BLACK", "Move Successful.", null);
                 connectionManager.broadcastToRoot(null, gameMessage, gameID,
                         gameDAO.findGame(gameID).blackUsername());
 
@@ -93,7 +96,7 @@ public class WebSocketHandler {
             else {
                 connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
                 gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                        currentGame, "WHITE", "Move Successful.");
+                        currentGame, "WHITE", "Move Successful.", null);
                 connectionManager.broadcastGame(username, gameMessage, gameID);
             }
 
@@ -103,7 +106,7 @@ public class WebSocketHandler {
 
         } catch (InvalidMoveException e) {
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
-                    "Error: Invalid Moved");
+                    "Error: Invalid Move");
             connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
         }
 
@@ -128,6 +131,25 @@ public class WebSocketHandler {
         }
 
         return true;
+    }
+
+    private void highlight(HighlightCommand highlightCommand) throws DataAccessException, IOException {
+        Integer gameID = highlightCommand.getGameID();
+        String playerColor = highlightCommand.getColor();
+        ChessPosition position = highlightCommand.getPosition();
+        ChessGame currentGame = gameDAO.findGame(gameID).game();
+
+        if (currentGame.getBoard().getPiece(position) != null) {
+            LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                    currentGame, playerColor, "", position);
+            connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
+        }
+        else {
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
+                    "Error: Not a Piece");
+            connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
+        }
+
     }
 
     private void leave(){

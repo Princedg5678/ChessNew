@@ -334,7 +334,17 @@ public class ChessClient {
         return letter - 'a' + 1;
     }
 
-    public String highlight(String... params){
+    public String highlight(String... params) throws ResponseException {
+        if (params.length < 1){
+            throw new ResponseException("Error: Expected <piece>");
+        }
+
+        String tempPosition = params[0];
+        char rowNumber = tempPosition.charAt(0);
+        char colNumber = tempPosition.charAt(1);
+        ChessPosition piecePosition = new ChessPosition(convertLetterToNumber(rowNumber),
+                Integer.parseInt(String.valueOf(colNumber)));
+
 
 
 

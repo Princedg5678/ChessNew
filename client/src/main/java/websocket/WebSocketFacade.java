@@ -2,9 +2,11 @@ package websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import model.GameID;
 import ui.ResponseException;
 import com.google.gson.Gson;
+import websocket.commands.HighlightCommand;
 import websocket.commands.MoveCommand;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
@@ -75,4 +77,15 @@ public class WebSocketFacade extends Endpoint{
         }
     }
 
+
+    public void highlightMoves(ChessPosition piecePosition, Integer currentID,
+                               String currentColor, String authToken) throws ResponseException {
+        try{
+            HighlightCommand highlightCommand = new HighlightCommand(UserGameCommand.CommandType.HIGHLIGHT, authToken,
+                    currentID, currentColor, piecePosition);
+            this.session.getBasicRemote().sendText(new Gson().toJson(highlightCommand));
+        } catch (IOException ex) {
+            throw new ResponseException(ex.getMessage());
+        }
+    }
 }

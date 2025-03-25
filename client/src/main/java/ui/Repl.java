@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import websocket.ServerMessageHandler;
 import websocket.commands.UserGameCommand;
@@ -45,10 +46,11 @@ public class Repl implements ServerMessageHandler {
             ServerMessage serverMessage = new Gson().fromJson(stringMessage, ServerMessage.class);
             if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
                 LoadGameMessage gameMessage = new Gson().fromJson(stringMessage, LoadGameMessage.class);
+                ChessPosition position = gameMessage.getPosition();
                 if (gameMessage.getColor().equalsIgnoreCase("WHITE")) {
-                    PrintBoard.printWhitePerspective(gameMessage.getGame());
+                    PrintBoard.printWhitePerspective(gameMessage.getGame(), position);
                 } else {
-                    PrintBoard.printBlackPerspective(gameMessage.getGame());
+                    PrintBoard.printBlackPerspective(gameMessage.getGame(), position);
                 }
             } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
                 System.out.println(serverMessage.getMessage());
