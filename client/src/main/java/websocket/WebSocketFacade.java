@@ -88,4 +88,24 @@ public class WebSocketFacade extends Endpoint{
             throw new ResponseException(ex.getMessage());
         }
     }
+
+    public void leave(Integer currentID, String currentColor, String authToken) throws ResponseException {
+        try{
+            UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken,
+                    currentID, currentColor);
+            this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
+        } catch (IOException ex) {
+            throw new ResponseException(ex.getMessage());
+        }
+    }
+
+    public void resign(Integer currentID, String currentColor, String authToken) throws ResponseException {
+        try{
+            UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken,
+                    currentID, currentColor);
+            this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
+        } catch (IOException ex) {
+            throw new ResponseException(ex.getMessage());
+        }
+    }
 }

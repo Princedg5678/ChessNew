@@ -326,7 +326,7 @@ public class ChessClient {
         ws.makeMove(newMove, currentGameID, currentColor, authToken);
 
 
-        return null;
+        return "";
     }
 
     public int convertLetterToNumber(char letter){
@@ -345,10 +345,9 @@ public class ChessClient {
         ChessPosition piecePosition = new ChessPosition(convertLetterToNumber(rowNumber),
                 Integer.parseInt(String.valueOf(colNumber)));
 
+        ws.highlightMoves(piecePosition, currentGameID, currentColor, authToken);
 
-
-
-        return null;
+        return "";
     }
 
     public String redraw(){
@@ -357,16 +356,18 @@ public class ChessClient {
         return null;
     }
 
-    public String resign(){
+    public String resign() throws ResponseException {
 
+        ws.resign(currentGameID, currentColor, authToken);
 
-        return null;
+        return "";
     }
 
-    public String leave(){
+    public String leave() throws ResponseException {
 
+        ws.leave(currentGameID, currentColor, authToken);
 
-        return null;
+        return "";
     }
 
 
