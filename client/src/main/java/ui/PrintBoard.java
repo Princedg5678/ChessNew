@@ -15,8 +15,8 @@ public class PrintBoard {
 
 
     public static void main(String[] args){
-        printWhitePerspective(new ChessGame(), new ChessPosition(2, 1));
-        printBlackPerspective(new ChessGame(), null);
+        printWhitePerspective(new ChessGame(), new ChessPosition(4, 4));
+        printBlackPerspective(new ChessGame(), new ChessPosition(5, 6));
     }
 
     public static void printWhitePerspective(ChessGame ourGame, ChessPosition position){
@@ -55,7 +55,7 @@ public class PrintBoard {
             for (int i = 8; i > 0; i--) {
                 printSide(i, out);
                 for (int j = 1; j < 9; j++) {
-                    printBoardRow(i, j, out, theBoard, endPositions);
+                    printBoardRow(i, j, out, theBoard, endPositions, position);
                 }
                 printSide(i, out);
                 out.print(RESET_BG_COLOR);
@@ -66,7 +66,7 @@ public class PrintBoard {
             for (int i = 1; i < 9; i++) {
                 printSide(i, out);
                 for (int j = 8; j > 0; j--) {
-                    printBoardRow(i, j, out, theBoard, endPositions);
+                    printBoardRow(i, j, out, theBoard, endPositions, position);
                 }
                 printSide(i, out);
                 out.print(RESET_BG_COLOR);
@@ -84,19 +84,21 @@ public class PrintBoard {
     }
 
     private static void printBoardRow(int row, int column, PrintStream out, ChessBoard board,
-                                      ArrayList<ChessPosition> possibleMoves){
+                                      ArrayList<ChessPosition> possibleMoves, ChessPosition piecePosition){
 
         ChessPosition position = new ChessPosition(row, column);
 
-        if ((9 - row + column) % 2 == 0) {
+
+        if (piecePosition.getRow() == row && piecePosition.getColumn() == column){
+            out.print(SET_BG_COLOR_YELLOW);
+        }
+        else if ((9 - row + column) % 2 == 0) {
             if (possibleMoves.contains(position)) {
                 out.print(SET_BG_COLOR_GREEN);
             }
             else {
                 out.print(SET_BG_COLOR_WHITE);
             }
-        } else if (){
-
         }
         else {
             if (possibleMoves.contains(position)) {

@@ -16,9 +16,18 @@ public class ChessGame {
     private ChessBoard myBoard = new ChessBoard();
     private TeamColor currentColor = TeamColor.WHITE;
     private ChessBoard pretendBoard = new ChessBoard();
+    private boolean gameOver = false;
 
     public ChessGame() {
         myBoard.resetBoard();
+    }
+
+    public void endGame(){
+        gameOver = true;
+    }
+
+    public boolean isGameOver(){
+        return gameOver;
     }
 
     /**

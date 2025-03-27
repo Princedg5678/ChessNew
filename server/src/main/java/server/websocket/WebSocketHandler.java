@@ -75,6 +75,13 @@ public class WebSocketHandler {
         ChessMove newMove = moveCommand.getMove();
         ChessGame currentGame = gameDAO.findGame(gameID).game();
 
+        if (currentGame.isGameOver()){
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
+                    "Error: Game Ended");
+            connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
+            return;
+        }
+
         if (!checkTurn(playerColor, gameID)){
             return;
         }
@@ -110,7 +117,30 @@ public class WebSocketHandler {
             connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
         }
 
-        //work on this
+        ChessGame.TeamColor currentColor = (playerColor.equalsIgnoreCase("WHITE") ?
+                ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK);
+        ChessGame.TeamColor opposingColor = (currentColor == ChessGame.TeamColor.WHITE ?
+                ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE);
+
+
+        if (currentGame.isInCheck(opposingColor)){
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    opposingColor + " is in check.");
+            connectionManager.broadcast(null, serverMessage, gameID);
+        }
+        else if (currentGame.isInStalemate(opposingColor)) {
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    "Stalemate. Game Over.");
+            connectionManager.broadcast(null, serverMessage, gameID);
+            currentGame.endGame();
+        }
+        else if (currentGame.isInCheckmate(opposingColor)) {
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    currentColor + " has achieved checkmate. They win!");
+            connectionManager.broadcast(null, serverMessage, gameID);
+            currentGame.endGame();
+        }
+
     }
 
     private boolean checkTurn(String playerColor, Integer gameID) throws DataAccessException, IOException {
