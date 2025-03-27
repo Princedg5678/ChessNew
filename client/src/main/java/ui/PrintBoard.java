@@ -95,7 +95,10 @@ public class PrintBoard {
             else {
                 out.print(SET_BG_COLOR_WHITE);
             }
-        } else {
+        } else if (){
+
+        }
+        else {
             if (possibleMoves.contains(position)) {
                 out.print(SET_BG_COLOR_DARK_GREEN);
             }
