@@ -143,12 +143,25 @@ public class SQLGameDAO implements GameDAO {
 
     public void removePlayer(int gameID, String playerColor) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
-            PreparedStatement preparedStatement;
-            if player
+            if (playerColor.equalsIgnoreCase("WHITE"){
+                try (PreparedStatement preparedStatement = conn.prepareStatement("UPDATE games "
+                        + "SET whiteUsername = ? WHERE gameID = ?")) {
+                    preparedStatement.setString(1, new Gson().toJson(game));
+                    preparedStatement.setInt(2, gameID);
+                    preparedStatement.executeUpdate();
+                }
+            }
+            else {
+                try (PreparedStatement preparedStatement = conn.prepareStatement("UPDATE games "
+                        + "SET whiteUsername = ? WHERE gameID = ?")) {
+                    preparedStatement.setString(1, new Gson().toJson(game));
+                    preparedStatement.setInt(2, gameID);
+                    preparedStatement.executeUpdate();
+                }
+            }
 
-
-
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
     }
