@@ -140,5 +140,19 @@ public class SQLGameDAO implements GameDAO {
             throw new DataAccessException(e.getMessage());
         }
     }
+
+    public void removePlayer(int gameID, String playerColor) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            PreparedStatement preparedStatement;
+            if player
+
+
+
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+
 }
 

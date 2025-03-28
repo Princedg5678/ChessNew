@@ -26,8 +26,14 @@ public class ConnectionManager {
         }
     }
 
-    public void remove(Integer gameID){
-        connections.remove(gameID);
+    public void remove(Integer gameID, String username){
+        ArrayList<Connection> connectionList = connections.get(gameID);
+        for (Connection c: connectionList){
+            if (c.username.equals(username)){
+                connections.get(gameID).remove(c);
+                break;
+            }
+        }
     }
 
     public void broadcast(String excludedUser,

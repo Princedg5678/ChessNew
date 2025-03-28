@@ -44,7 +44,7 @@ public class WebSocketHandler {
                     userGameCommand.getGameID(), session);
             case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MoveCommand.class));
             case HIGHLIGHT -> highlight(new Gson().fromJson(message, HighlightCommand.class));
-            case LEAVE -> leave();
+            case LEAVE -> leave(userGameCommand);
             case RESIGN -> resign();
         }
     }
@@ -182,12 +182,25 @@ public class WebSocketHandler {
 
     }
 
-    private void leave(){
+    private void leave(UserGameCommand gameCommand) throws IOException {
+        Integer gameID = gameCommand.getGameID();
+        String playerColor = gameCommand.getColor();
+        connectionManager.remove(gameID, username);
 
+
+        ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                username + " has left the game");
+        connectionManager.broadcast(username, serverMessage, gameID);
     }
 
-    private void resign(){
+    private void resign(UserGameCommand gameCommand) throws IOException, DataAccessException {
+        Integer gameID = gameCommand.getGameID();
 
+        ChessGame currentGame = gameDAO.findGame(gameID).game();
+        currentGame.endGame();
+        ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                username + " has resigned. Game Over.");
+        connectionManager.broadcast(null, serverMessage, gameID);
     }
 
 }
