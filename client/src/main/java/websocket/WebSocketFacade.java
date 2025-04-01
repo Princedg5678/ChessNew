@@ -108,4 +108,14 @@ public class WebSocketFacade extends Endpoint{
             throw new ResponseException(ex.getMessage());
         }
     }
+
+    public void redraw(Integer currentID, String currentColor, String authToken) throws ResponseException {
+        try{
+            UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.REDRAW, authToken,
+                    currentID, currentColor);
+            this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
+        } catch (IOException ex) {
+            throw new ResponseException(ex.getMessage());
+        }
+    }
 }

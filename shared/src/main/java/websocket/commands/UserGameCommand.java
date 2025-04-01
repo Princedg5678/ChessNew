@@ -27,6 +27,7 @@ public class UserGameCommand {
         CONNECT,
         MAKE_MOVE,
         HIGHLIGHT,
+        REDRAW,
         LEAVE,
         RESIGN
     }

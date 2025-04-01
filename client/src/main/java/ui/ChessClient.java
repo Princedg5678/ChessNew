@@ -350,10 +350,11 @@ public class ChessClient {
         return "";
     }
 
-    public String redraw(){
+    public String redraw() throws ResponseException {
 
+        ws.redraw(currentGameID, currentColor, authToken);
 
-        return null;
+        return "";
     }
 
     public String resign() throws ResponseException {

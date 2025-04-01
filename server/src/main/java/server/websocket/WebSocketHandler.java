@@ -44,6 +44,7 @@ public class WebSocketHandler {
                     userGameCommand.getGameID(), session);
             case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MoveCommand.class));
             case HIGHLIGHT -> highlight(new Gson().fromJson(message, HighlightCommand.class));
+            case REDRAW -> redraw(userGameCommand);
             case LEAVE -> leave(userGameCommand);
             case RESIGN -> resign(userGameCommand);
         }
@@ -195,7 +196,6 @@ public class WebSocketHandler {
 
     private void resign(UserGameCommand gameCommand) throws IOException, DataAccessException {
         Integer gameID = gameCommand.getGameID();
-
         ChessGame currentGame = gameDAO.findGame(gameID).game();
         currentGame.endGame();
         ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
@@ -203,4 +203,13 @@ public class WebSocketHandler {
         connectionManager.broadcast(null, serverMessage, gameID);
     }
 
+    private void redraw(UserGameCommand gameCommand) throws DataAccessException, IOException {
+        Integer gameID = gameCommand.getGameID();
+        String playerColor = gameCommand.getColor();
+        ChessGame currentGame = gameDAO.findGame(gameID).game();
+
+        LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                currentGame, playerColor, "", null);
+        connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
+    }
 }
