@@ -143,10 +143,10 @@ public class SQLGameDAO implements GameDAO {
 
     public void removePlayer(int gameID, String playerColor) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
-            if (playerColor.equalsIgnoreCase("WHITE"){
+            if (playerColor.equalsIgnoreCase("WHITE")){
                 try (PreparedStatement preparedStatement = conn.prepareStatement("UPDATE games "
                         + "SET whiteUsername = ? WHERE gameID = ?")) {
-                    preparedStatement.setString(1, new Gson().toJson(game));
+                    preparedStatement.setString(1, new Gson().toJson(null));
                     preparedStatement.setInt(2, gameID);
                     preparedStatement.executeUpdate();
                 }
@@ -154,7 +154,7 @@ public class SQLGameDAO implements GameDAO {
             else {
                 try (PreparedStatement preparedStatement = conn.prepareStatement("UPDATE games "
                         + "SET whiteUsername = ? WHERE gameID = ?")) {
-                    preparedStatement.setString(1, new Gson().toJson(game));
+                    preparedStatement.setString(1, new Gson().toJson(null));
                     preparedStatement.setInt(2, gameID);
                     preparedStatement.executeUpdate();
                 }

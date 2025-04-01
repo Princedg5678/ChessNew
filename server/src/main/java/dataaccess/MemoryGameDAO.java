@@ -56,5 +56,19 @@ public class MemoryGameDAO implements GameDAO{
         gameMap.replace(gameID, updatedData);
     }
 
+    public void removePlayer(int gameID, String playerColor) throws DataAccessException {
+        GameData currentData = findGame(gameID);
+        if (playerColor.equalsIgnoreCase("WHITE")){
+            GameData updatedData = new GameData(gameID, null, currentData.blackUsername(),
+                    currentData.gameName(), currentData.game());
+            gameMap.replace(gameID, updatedData);
+        }
+        else{
+            GameData updatedData = new GameData(gameID, currentData.whiteUsername(), null,
+                    currentData.gameName(), currentData.game());
+            gameMap.replace(gameID, updatedData);
+        }
+    }
+
 
 }
