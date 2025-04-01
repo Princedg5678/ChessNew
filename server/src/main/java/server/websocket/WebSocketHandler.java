@@ -45,7 +45,7 @@ public class WebSocketHandler {
             case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MoveCommand.class));
             case HIGHLIGHT -> highlight(new Gson().fromJson(message, HighlightCommand.class));
             case LEAVE -> leave(userGameCommand);
-            case RESIGN -> resign();
+            case RESIGN -> resign(userGameCommand);
         }
     }
 
@@ -182,11 +182,11 @@ public class WebSocketHandler {
 
     }
 
-    private void leave(UserGameCommand gameCommand) throws IOException {
+    private void leave(UserGameCommand gameCommand) throws IOException, DataAccessException {
         Integer gameID = gameCommand.getGameID();
         String playerColor = gameCommand.getColor();
         connectionManager.remove(gameID, username);
-
+        gameDAO.removePlayer(gameID, playerColor);
 
         ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                 username + " has left the game");
