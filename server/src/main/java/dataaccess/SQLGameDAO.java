@@ -146,15 +146,15 @@ public class SQLGameDAO implements GameDAO {
             if (playerColor.equalsIgnoreCase("WHITE")){
                 try (PreparedStatement preparedStatement = conn.prepareStatement("UPDATE games "
                         + "SET whiteUsername = ? WHERE gameID = ?")) {
-                    preparedStatement.setString(1, new Gson().toJson(null));
+                    preparedStatement.setString(1, null);
                     preparedStatement.setInt(2, gameID);
                     preparedStatement.executeUpdate();
                 }
             }
             else {
                 try (PreparedStatement preparedStatement = conn.prepareStatement("UPDATE games "
-                        + "SET whiteUsername = ? WHERE gameID = ?")) {
-                    preparedStatement.setString(1, new Gson().toJson(null));
+                        + "SET blackUsername = ? WHERE gameID = ?")) {
+                    preparedStatement.setString(1, null);
                     preparedStatement.setInt(2, gameID);
                     preparedStatement.executeUpdate();
                 }
