@@ -53,10 +53,10 @@ public class WebSocketHandler {
     private void connect(String username, String playerColor,
                          Integer gameID, Session session) throws DataAccessException, IOException {
         connectionManager.add(gameID, username, session);
+        LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                gameDAO.findGame(gameID).game(), playerColor, null, null);
+        connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
         if (playerColor != null) {
-            LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                    gameDAO.findGame(gameID).game(), playerColor, "You joined the game.", null);
-            connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                     username + " has joined the game as " + playerColor + ".");
             connectionManager.broadcast(username, serverMessage, gameID);
