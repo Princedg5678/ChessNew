@@ -60,7 +60,7 @@ public class WebSocketHandler {
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                     username + " has joined the game as " + playerColor + ".");
             connectionManager.broadcast(username, serverMessage, gameID);
-            //figure out why board is being compared in the test
+            //find a way to print board for observer
         }
         else {
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,

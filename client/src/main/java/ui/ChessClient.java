@@ -367,6 +367,7 @@ public class ChessClient {
     public String leave() throws ResponseException {
 
         ws.leave(currentGameID, currentColor, authToken);
+        currentState = State.SIGNEDIN;
 
         return "";
     }

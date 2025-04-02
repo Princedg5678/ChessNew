@@ -89,7 +89,7 @@ public class PrintBoard {
         ChessPosition position = new ChessPosition(row, column);
 
 
-        if (piecePosition.getRow() == row && piecePosition.getColumn() == column){
+        if (piecePosition != null && (piecePosition.getRow() == row && piecePosition.getColumn() == column)){
             out.print(SET_BG_COLOR_YELLOW);
         }
         else if ((9 - row + column) % 2 == 0) {

@@ -47,7 +47,8 @@ public class Repl implements ServerMessageHandler {
             if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
                 LoadGameMessage gameMessage = new Gson().fromJson(stringMessage, LoadGameMessage.class);
                 ChessPosition position = gameMessage.getPosition();
-                if (gameMessage.getColor().equalsIgnoreCase("WHITE")) {
+                if (gameMessage.getColor().equalsIgnoreCase("WHITE")
+                        || gameMessage.getColor() == null) {
                     PrintBoard.printWhitePerspective(gameMessage.getGame(), position);
                 } else {
                     PrintBoard.printBlackPerspective(gameMessage.getGame(), position);
