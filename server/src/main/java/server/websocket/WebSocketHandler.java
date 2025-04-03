@@ -11,6 +11,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.HighlightCommand;
 import websocket.commands.MoveCommand;
+import websocket.messages.ErrorGameMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
@@ -24,6 +25,7 @@ public class WebSocketHandler {
     GameDAO gameDAO;
     String username;
     String playerColor;
+    String authToken;
 
     public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO){
         this.authDAO = authDAO;
@@ -37,9 +39,9 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException, DataAccessException,
             InvalidMoveException {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
-        String authToken = userGameCommand.getAuthToken();
+        authToken = userGameCommand.getAuthToken();
         username = authDAO.getUsername(authToken);
-        playerColor = gameDAO.getPlayerColor(userGameCommand.getGameID(), username);
+
 
         switch (userGameCommand.getCommandType()){
             case CONNECT -> connect(username, userGameCommand.getGameID(), session);
@@ -53,16 +55,41 @@ public class WebSocketHandler {
 
     private void connect(String username, Integer gameID, Session session) throws DataAccessException, IOException {
         connectionManager.add(gameID, username, session);
-        LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                gameDAO.findGame(gameID).game(), playerColor, null, null);
-        connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
+
+        try {
+            if (gameDAO.findGame(gameID) == null) {
+                ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                        null, "Error: Game Not Found");
+                connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
+                return;
+            }
+            if (!authDAO.checkToken(authToken)) {
+                ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                        null, "Error: Unauthorized");
+                connectionManager.displayToRoot(session, errorMessage);
+                return;
+            }
+        } catch (Exception e) {
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, e.getMessage());
+            connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
+            return;
+        }
+
+        playerColor = gameDAO.getPlayerColor(gameID, username);
+
         if (playerColor != null) {
+            LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                    gameDAO.findGame(gameID).game(), playerColor, null, null);
+            connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                     username + " has joined the game as " + playerColor + ".");
             connectionManager.broadcast(username, serverMessage, gameID);
-            //find a way to print board for observer
         }
         else {
+            LoadGameMessage observeMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                    gameDAO.findGame(gameID).game(), "WHITE", null, null);
+            connectionManager.broadcastToRoot(null, observeMessage, gameID, username);
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                     username + " has joined the game as an observer.");
             connectionManager.broadcast(username, serverMessage, gameID);
@@ -77,7 +104,7 @@ public class WebSocketHandler {
 
         if (currentGame.isGameOver()){
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
-                    "Error: Game Ended");
+                     "Error: Game Ended");
             connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
             return;
         }
@@ -90,12 +117,12 @@ public class WebSocketHandler {
             currentGame.makeMove(newMove);
             gameDAO.updateGame(currentGame, gameID);
             LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                    currentGame, playerColor, "Move Successful.", null);
+                    currentGame, playerColor, "Move Successful.",  null);
 
             if (playerColor.equalsIgnoreCase("WHITE")){
                 connectionManager.broadcastGame(gameDAO.findGame(gameID).blackUsername(), gameMessage, gameID);
                 gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                        currentGame, "BLACK", "Move Successful.", null);
+                        currentGame, "BLACK", "Move Successful.",  null);
                 connectionManager.broadcastToRoot(null, gameMessage, gameID,
                         gameDAO.findGame(gameID).blackUsername());
 
@@ -103,7 +130,7 @@ public class WebSocketHandler {
             else {
                 connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
                 gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                        currentGame, "WHITE", "Move Successful.", null);
+                        currentGame, "WHITE", "Move Successful.",  null);
                 connectionManager.broadcastGame(username, gameMessage, gameID);
             }
 
@@ -170,7 +197,7 @@ public class WebSocketHandler {
 
         if (currentGame.getBoard().getPiece(position) != null) {
             LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                    currentGame, playerColor, "", position);
+                    currentGame, playerColor, "",  position);
             connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
         }
         else {

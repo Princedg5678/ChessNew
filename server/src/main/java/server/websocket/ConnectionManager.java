@@ -90,4 +90,8 @@ public class ConnectionManager {
         }
     }
 
+    public void displayToRoot(Session session, ServerMessage message) throws IOException {
+        session.getRemote().sendString(new Gson().toJson(message));
+    }
+
 }
