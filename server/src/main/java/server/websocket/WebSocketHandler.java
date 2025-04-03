@@ -23,6 +23,7 @@ public class WebSocketHandler {
     AuthDAO authDAO;
     GameDAO gameDAO;
     String username;
+    String playerColor;
 
     public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO){
         this.authDAO = authDAO;
@@ -38,6 +39,7 @@ public class WebSocketHandler {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         String authToken = userGameCommand.getAuthToken();
         username = authDAO.getUsername(authToken);
+        playerColor = gameDAO.getPlayerColor(userGameCommand.getGameID(), username);
 
         switch (userGameCommand.getCommandType()){
             case CONNECT -> connect(username, userGameCommand.getGameID(), session);
@@ -49,10 +51,8 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(String username,
-                         Integer gameID, Session session) throws DataAccessException, IOException {
+    private void connect(String username, Integer gameID, Session session) throws DataAccessException, IOException {
         connectionManager.add(gameID, username, session);
-
         LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                 gameDAO.findGame(gameID).game(), playerColor, null, null);
         connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
@@ -72,7 +72,6 @@ public class WebSocketHandler {
 
     private void makeMove(MoveCommand moveCommand) throws DataAccessException, IOException, InvalidMoveException {
         Integer gameID = moveCommand.getGameID();
-        String playerColor = moveCommand.getColor();
         ChessMove newMove = moveCommand.getMove();
         ChessGame currentGame = gameDAO.findGame(gameID).game();
 
@@ -166,7 +165,6 @@ public class WebSocketHandler {
 
     private void highlight(HighlightCommand highlightCommand) throws DataAccessException, IOException {
         Integer gameID = highlightCommand.getGameID();
-        String playerColor = highlightCommand.getColor();
         ChessPosition position = highlightCommand.getPosition();
         ChessGame currentGame = gameDAO.findGame(gameID).game();
 
@@ -185,7 +183,6 @@ public class WebSocketHandler {
 
     private void leave(UserGameCommand gameCommand) throws IOException, DataAccessException {
         Integer gameID = gameCommand.getGameID();
-        String playerColor = gameCommand.getColor();
         connectionManager.remove(gameID, username);
         gameDAO.removePlayer(gameID, playerColor);
 
@@ -205,7 +202,6 @@ public class WebSocketHandler {
 
     private void redraw(UserGameCommand gameCommand) throws DataAccessException, IOException {
         Integer gameID = gameCommand.getGameID();
-        String playerColor = gameCommand.getColor();
         ChessGame currentGame = gameDAO.findGame(gameID).game();
 
         LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
