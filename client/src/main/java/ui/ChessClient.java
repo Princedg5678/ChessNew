@@ -233,7 +233,7 @@ public class ChessClient {
 
         server.playGame(joinRequest, authToken);
         ws = new WebSocketFacade(serverURL, sms);
-        ws.playGame(gameID.gameID(), playerColor, authToken);
+        ws.playGame(gameID.gameID(), authToken);
 
         if(playerColor.equalsIgnoreCase("WHITE")){
             currentColor = "WHITE";

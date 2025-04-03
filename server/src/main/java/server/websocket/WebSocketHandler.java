@@ -40,8 +40,7 @@ public class WebSocketHandler {
         username = authDAO.getUsername(authToken);
 
         switch (userGameCommand.getCommandType()){
-            case CONNECT -> connect(username, userGameCommand.getColor(),
-                    userGameCommand.getGameID(), session);
+            case CONNECT -> connect(username, userGameCommand.getGameID(), session);
             case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MoveCommand.class));
             case HIGHLIGHT -> highlight(new Gson().fromJson(message, HighlightCommand.class));
             case REDRAW -> redraw(userGameCommand);
@@ -50,9 +49,10 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(String username, String playerColor,
+    private void connect(String username,
                          Integer gameID, Session session) throws DataAccessException, IOException {
         connectionManager.add(gameID, username, session);
+
         LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                 gameDAO.findGame(gameID).game(), playerColor, null, null);
         connectionManager.broadcastToRoot(null, gameMessage, gameID, username);

@@ -166,6 +166,36 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
+    public String getPlayerColor(int gameID, String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT whiteUsername, " +
+                    "blackUsername FROM games WHERE gameID = ?;")) {
+                preparedStatement.setInt(1, gameID);
+                try (var result = preparedStatement.executeQuery()){
+                    if (result.next()){
+                        String whiteUsername = result.getString(1);
+                        String blackUsername = result.getString(2);
+                        if (username.equalsIgnoreCase(whiteUsername)){
+                            return "WHITE";
+                        }
+                        else if (username.equalsIgnoreCase(blackUsername)){
+                            return "BLACK";
+                        }
+                        else {
+                            return "WHITE";
+                        }
+                    }
+                    else {
+                        throw new DataAccessException("Error: game does not exist");
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
 
 }
 
