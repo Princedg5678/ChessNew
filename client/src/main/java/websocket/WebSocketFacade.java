@@ -59,18 +59,17 @@ public class WebSocketFacade extends Endpoint{
     public void observeGame(Integer gameID, String authToken) throws ResponseException {
         try{
             UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT,
-                    authToken, gameID, null);
+                    authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());
         }
     }
 
-    public void makeMove(ChessMove newMove, Integer currentID,
-                         String currentColor, String authToken) throws ResponseException {
+    public void makeMove(ChessMove newMove, Integer currentID, String authToken) throws ResponseException {
         try{
-            MoveCommand moveCommand = new MoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, currentID,
-                    currentColor, newMove);
+            MoveCommand moveCommand = new MoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken,
+                    currentID, newMove);
             this.session.getBasicRemote().sendText(new Gson().toJson(moveCommand));
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());
@@ -79,40 +78,40 @@ public class WebSocketFacade extends Endpoint{
 
 
     public void highlightMoves(ChessPosition piecePosition, Integer currentID,
-                               String currentColor, String authToken) throws ResponseException {
+                               String authToken) throws ResponseException {
         try{
             HighlightCommand highlightCommand = new HighlightCommand(UserGameCommand.CommandType.HIGHLIGHT, authToken,
-                    currentID, currentColor, piecePosition);
+                    currentID, piecePosition);
             this.session.getBasicRemote().sendText(new Gson().toJson(highlightCommand));
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());
         }
     }
 
-    public void leave(Integer currentID, String currentColor, String authToken) throws ResponseException {
+    public void leave(Integer currentID, String authToken) throws ResponseException {
         try{
             UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken,
-                    currentID, currentColor);
+                    currentID);
             this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());
         }
     }
 
-    public void resign(Integer currentID, String currentColor, String authToken) throws ResponseException {
+    public void resign(Integer currentID, String authToken) throws ResponseException {
         try{
             UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken,
-                    currentID, currentColor);
+                    currentID);
             this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());
         }
     }
 
-    public void redraw(Integer currentID, String currentColor, String authToken) throws ResponseException {
+    public void redraw(Integer currentID, String authToken) throws ResponseException {
         try{
             UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.REDRAW, authToken,
-                    currentID, currentColor);
+                    currentID);
             this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());

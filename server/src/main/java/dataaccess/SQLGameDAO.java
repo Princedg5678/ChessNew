@@ -182,7 +182,7 @@ public class SQLGameDAO implements GameDAO {
                             return "BLACK";
                         }
                         else {
-                            return "WHITE";
+                            return null;
                         }
                     }
                     else {

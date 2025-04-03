@@ -323,7 +323,7 @@ public class ChessClient {
                 Integer.parseInt(String.valueOf(colNumber)));
 
         ChessMove newMove = new ChessMove(startPosition, endPosition, promotionPiece);
-        ws.makeMove(newMove, currentGameID, currentColor, authToken);
+        ws.makeMove(newMove, currentGameID, authToken);
 
 
         return "";
@@ -345,28 +345,28 @@ public class ChessClient {
         ChessPosition piecePosition = new ChessPosition(convertLetterToNumber(rowNumber),
                 Integer.parseInt(String.valueOf(colNumber)));
 
-        ws.highlightMoves(piecePosition, currentGameID, currentColor, authToken);
+        ws.highlightMoves(piecePosition, currentGameID, authToken);
 
         return "";
     }
 
     public String redraw() throws ResponseException {
 
-        ws.redraw(currentGameID, currentColor, authToken);
+        ws.redraw(currentGameID, authToken);
 
         return "";
     }
 
     public String resign() throws ResponseException {
 
-        ws.resign(currentGameID, currentColor, authToken);
+        ws.resign(currentGameID, authToken);
 
         return "";
     }
 
     public String leave() throws ResponseException {
 
-        ws.leave(currentGameID, currentColor, authToken);
+        ws.leave(currentGameID, authToken);
         currentState = State.SIGNEDIN;
 
         return "";
