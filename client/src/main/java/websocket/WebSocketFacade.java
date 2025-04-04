@@ -46,7 +46,7 @@ public class WebSocketFacade extends Endpoint{
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void playGame(Integer gameID, String authToken) throws ResponseException {
+    public void connectToGame(Integer gameID, String authToken) throws ResponseException {
         try {
             UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT,
                     authToken, gameID);
@@ -56,15 +56,6 @@ public class WebSocketFacade extends Endpoint{
         }
     }
 
-    public void observeGame(Integer gameID, String authToken) throws ResponseException {
-        try{
-            UserGameCommand gameCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT,
-                    authToken, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(gameCommand));
-        } catch (IOException ex) {
-            throw new ResponseException(ex.getMessage());
-        }
-    }
 
     public void makeMove(ChessMove newMove, Integer currentID, String authToken) throws ResponseException {
         try{

@@ -233,7 +233,7 @@ public class ChessClient {
 
         server.playGame(joinRequest, authToken);
         ws = new WebSocketFacade(serverURL, sms);
-        ws.playGame(gameID.gameID(), authToken);
+        ws.connectToGame(gameID.gameID(), authToken);
 
         if(playerColor.equalsIgnoreCase("WHITE")){
             currentColor = "WHITE";
@@ -269,7 +269,7 @@ public class ChessClient {
             if (Objects.equals(gameID, tempID)){
 
                 ws = new WebSocketFacade(serverURL, sms);
-                ws.observeGame(gameID.gameID(), authToken);
+                ws.connectToGame(gameID.gameID(), authToken);
 
                 return "Game Found! Observing game " + gameNumber;
             }
@@ -292,17 +292,17 @@ public class ChessClient {
         ChessPiece.PieceType promotionPiece = null;
 
         if (params.length == 3){
-            String TempPromotion = params[2];
-            if (TempPromotion.equalsIgnoreCase("ROOK")){
+            String tempPromotion = params[2];
+            if (tempPromotion.equalsIgnoreCase("ROOK")){
                 promotionPiece = ChessPiece.PieceType.ROOK;
             }
-            else if (TempPromotion.equalsIgnoreCase("KNIGHT")){
+            else if (tempPromotion.equalsIgnoreCase("KNIGHT")){
                 promotionPiece = ChessPiece.PieceType.KNIGHT;
             }
-            else if (TempPromotion.equalsIgnoreCase("BISHOP")){
+            else if (tempPromotion.equalsIgnoreCase("BISHOP")){
                 promotionPiece = ChessPiece.PieceType.BISHOP;
             }
-            else if (TempPromotion.equalsIgnoreCase("QUEEN")){
+            else if (tempPromotion.equalsIgnoreCase("QUEEN")){
                 promotionPiece = ChessPiece.PieceType.QUEEN;
             }
             else {
