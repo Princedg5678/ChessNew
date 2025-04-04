@@ -210,6 +210,7 @@ public class WebSocketHandler {
         Integer gameID = highlightCommand.getGameID();
         ChessPosition position = highlightCommand.getPosition();
         ChessGame currentGame = gameDAO.findGame(gameID).game();
+        playerColor = gameDAO.getPlayerColor(gameID, username);
 
         if (currentGame.getBoard().getPiece(position) != null) {
             LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
@@ -262,6 +263,7 @@ public class WebSocketHandler {
     private void redraw(UserGameCommand gameCommand) throws DataAccessException, IOException {
         Integer gameID = gameCommand.getGameID();
         ChessGame currentGame = gameDAO.findGame(gameID).game();
+        playerColor = gameDAO.getPlayerColor(gameID, username);
 
         LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                 currentGame, playerColor, "", null);
