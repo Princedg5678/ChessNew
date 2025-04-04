@@ -42,6 +42,12 @@ public class WebSocketHandler {
         authToken = userGameCommand.getAuthToken();
         username = authDAO.getUsername(authToken);
 
+        if (!authDAO.checkToken(authToken)) {
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, "Error: Unauthorized");
+            connectionManager.displayToRoot(session, errorMessage);
+            return;
+        }
 
         switch (userGameCommand.getCommandType()){
             case CONNECT -> connect(username, userGameCommand.getGameID(), session);
@@ -61,12 +67,6 @@ public class WebSocketHandler {
                 ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
                         null, "Error: Game Not Found");
                 connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
-                return;
-            }
-            if (!authDAO.checkToken(authToken)) {
-                ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
-                        null, "Error: Unauthorized");
-                connectionManager.displayToRoot(session, errorMessage);
                 return;
             }
         } catch (Exception e) {
@@ -132,12 +132,12 @@ public class WebSocketHandler {
             currentGame.makeMove(newMove);
             gameDAO.updateGame(currentGame, gameID);
             LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                    currentGame, playerColor, "Move Successful.",  null);
+                    currentGame, playerColor, null,  null);
 
             if (playerColor.equalsIgnoreCase("WHITE")){
                 connectionManager.broadcastGame(gameDAO.findGame(gameID).blackUsername(), gameMessage, gameID);
                 gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                        currentGame, "BLACK", "Move Successful.",  null);
+                        currentGame, "BLACK", null,  null);
                 connectionManager.broadcastToRoot(null, gameMessage, gameID,
                         gameDAO.findGame(gameID).blackUsername());
 
@@ -145,7 +145,7 @@ public class WebSocketHandler {
             else {
                 connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
                 gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                        currentGame, "WHITE", "Move Successful.",  null);
+                        currentGame, "WHITE", null,  null);
                 connectionManager.broadcastGame(username, gameMessage, gameID);
             }
 
