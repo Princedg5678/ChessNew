@@ -15,8 +15,8 @@ public class PrintBoard {
 
 
     public static void main(String[] args){
-        printWhitePerspective(new ChessGame(), new ChessPosition(4, 4));
-        printBlackPerspective(new ChessGame(), new ChessPosition(5, 6));
+        printWhitePerspective(new ChessGame(), new ChessPosition(1, 4));
+        printBlackPerspective(new ChessGame(), new ChessPosition(2, 1));
     }
 
     public static void printWhitePerspective(ChessGame ourGame, ChessPosition position){
