@@ -101,11 +101,26 @@ public class WebSocketHandler {
         Integer gameID = moveCommand.getGameID();
         ChessMove newMove = moveCommand.getMove();
         ChessGame currentGame = gameDAO.findGame(gameID).game();
+        playerColor = gameDAO.getPlayerColor(gameID, username);
+
+        if (!authDAO.checkToken(authToken)) {
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, "Error: Unauthorized");
+            connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
+            return;
+        }
 
         if (currentGame.isGameOver()){
-            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
-                     "Error: Game Ended");
-            connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, "Error: Game Ended");
+            connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
+            return;
+        }
+
+        if (gameDAO.getPlayerColor(gameID, username) == null) {
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, "Error: Observers can't make moves");
+            connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
             return;
         }
 
@@ -139,9 +154,9 @@ public class WebSocketHandler {
             connectionManager.broadcast(username, serverMessage, gameID);
 
         } catch (InvalidMoveException e) {
-            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
-                    "Error: Invalid Move");
-            connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, "Error: Invalid Move");
+            connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
         }
 
         ChessGame.TeamColor currentColor = (playerColor.equalsIgnoreCase("WHITE") ?
@@ -150,7 +165,14 @@ public class WebSocketHandler {
                 ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE);
 
 
-        if (currentGame.isInCheck(opposingColor)){
+        if (currentGame.isInCheckmate(opposingColor)) {
+            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                    currentColor + " has achieved checkmate. They win!");
+            connectionManager.broadcast(null, serverMessage, gameID);
+            currentGame.endGame();
+            gameDAO.updateGame(currentGame, gameID);
+        }
+        else if (currentGame.isInCheck(opposingColor)){
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                     opposingColor + " is in check.");
             connectionManager.broadcast(null, serverMessage, gameID);
@@ -160,14 +182,8 @@ public class WebSocketHandler {
                     "Stalemate. Game Over.");
             connectionManager.broadcast(null, serverMessage, gameID);
             currentGame.endGame();
+            gameDAO.updateGame(currentGame, gameID);
         }
-        else if (currentGame.isInCheckmate(opposingColor)) {
-            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
-                    currentColor + " has achieved checkmate. They win!");
-            connectionManager.broadcast(null, serverMessage, gameID);
-            currentGame.endGame();
-        }
-
     }
 
     private boolean checkTurn(String playerColor, Integer gameID) throws DataAccessException, IOException {
@@ -181,9 +197,9 @@ public class WebSocketHandler {
         }
 
         if (currentColor != currentGame.getTeamTurn()){
-            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
-                    "Error: It is not your turn");
-            connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, "Error: It is not your turn");
+            connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
             return false;
         }
 
@@ -210,8 +226,11 @@ public class WebSocketHandler {
 
     private void leave(UserGameCommand gameCommand) throws IOException, DataAccessException {
         Integer gameID = gameCommand.getGameID();
+        playerColor = gameDAO.getPlayerColor(gameID, username);
         connectionManager.remove(gameID, username);
-        gameDAO.removePlayer(gameID, playerColor);
+        if (playerColor != null) {
+            gameDAO.removePlayer(gameID, playerColor);
+        }
 
         ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                 username + " has left the game");
@@ -221,7 +240,20 @@ public class WebSocketHandler {
     private void resign(UserGameCommand gameCommand) throws IOException, DataAccessException {
         Integer gameID = gameCommand.getGameID();
         ChessGame currentGame = gameDAO.findGame(gameID).game();
+        if (currentGame.isGameOver()){
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, "Error: Game is over");
+            connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
+            return;
+        }
+        if (gameDAO.getPlayerColor(gameID, username) == null) {
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, "Error: Observers can't resign");
+            connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
+            return;
+        }
         currentGame.endGame();
+        gameDAO.updateGame(currentGame, gameID);
         ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                 username + " has resigned. Game Over.");
         connectionManager.broadcast(null, serverMessage, gameID);
