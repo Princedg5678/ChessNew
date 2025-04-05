@@ -9,6 +9,10 @@ public class ErrorGameMessage extends ServerMessage{
         this.errorMessage = e;
     }
 
+    public String getErrorMessage(){
+        return errorMessage;
+    }
+
 }
 
 

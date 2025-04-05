@@ -4,6 +4,7 @@ import chess.ChessPosition;
 import com.google.gson.Gson;
 import websocket.ServerMessageHandler;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorGameMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 import ui.PrintBoard;
@@ -54,7 +55,8 @@ public class Repl implements ServerMessageHandler {
                     PrintBoard.printBlackPerspective(gameMessage.getGame(), position);
                 }
             } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
-                System.out.println(serverMessage.getMessage());
+                ErrorGameMessage errorMessage = new Gson().fromJson(stringMessage, ErrorGameMessage.class);
+                System.out.println(errorMessage.getErrorMessage());
             } else {
                 System.out.println(serverMessage.getMessage());
             }

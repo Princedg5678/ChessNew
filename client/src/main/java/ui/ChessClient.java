@@ -52,12 +52,18 @@ public class ChessClient {
                     case "observe" -> observe(params);
                     default -> help();
                 };
+            } else if (currentState == State.RESIGN) {
+                return switch (cmd) {
+                    case "yes" -> resign();
+                    case "no" -> resignCancel();
+                    default -> help();
+                };
             } else {
                 return switch (cmd) {
                     case "move" -> move(params);
                     case "redraw" -> redraw();
                     case "highlight" -> highlight(params);
-                    case "resign" -> resign();
+                    case "resign" -> resignState();
                     case "leave" -> leave();
                     default -> help();
                 };
@@ -84,6 +90,12 @@ public class ChessClient {
                     - help
                     - resign
                     - leave
+                    """;
+        }
+        else if (currentState == State.RESIGN){
+            return """
+                    - yes
+                    - no
                     """;
         }
         return """
@@ -310,17 +322,17 @@ public class ChessClient {
             }
         }
 
-        char rowNumber = tempStart.charAt(0);
-        char colNumber = tempStart.charAt(1);
+        char rowNumber = tempStart.charAt(1);
+        char colNumber = tempStart.charAt(0);
 
-        ChessPosition startPosition = new ChessPosition(convertLetterToNumber(rowNumber),
-                Integer.parseInt(String.valueOf(colNumber)));
+        ChessPosition startPosition = new ChessPosition(Integer.parseInt(String.valueOf(rowNumber)),
+                convertLetterToNumber(colNumber));
 
-        rowNumber = tempEnd.charAt(0);
-        colNumber = tempEnd.charAt(1);
+        rowNumber = tempEnd.charAt(1);
+        colNumber = tempEnd.charAt(0);
 
-        ChessPosition endPosition = new ChessPosition(convertLetterToNumber(rowNumber),
-                Integer.parseInt(String.valueOf(colNumber)));
+        ChessPosition endPosition = new ChessPosition(Integer.parseInt(String.valueOf(rowNumber)),
+                convertLetterToNumber(colNumber));
 
         ChessMove newMove = new ChessMove(startPosition, endPosition, promotionPiece);
         ws.makeMove(newMove, currentGameID, authToken);
@@ -340,10 +352,10 @@ public class ChessClient {
         }
 
         String tempPosition = params[0];
-        char rowNumber = tempPosition.charAt(0);
-        char colNumber = tempPosition.charAt(1);
-        ChessPosition piecePosition = new ChessPosition(convertLetterToNumber(rowNumber),
-                Integer.parseInt(String.valueOf(colNumber)));
+        char rowNumber = tempPosition.charAt(1);
+        char colNumber = tempPosition.charAt(0);
+        ChessPosition piecePosition = new ChessPosition(Integer.parseInt(String.valueOf(rowNumber)),
+                convertLetterToNumber(colNumber));
 
         ws.highlightMoves(piecePosition, currentGameID, authToken);
 
@@ -355,6 +367,17 @@ public class ChessClient {
         ws.redraw(currentGameID, authToken);
 
         return "";
+    }
+
+    public String resignState(){
+        currentState = State.RESIGN;
+        System.out.println("Are you sure you want to resign?");
+        return help();
+    }
+
+    public String resignCancel(){
+        currentState = State.PLAYINGGAME;
+        return help();
     }
 
     public String resign() throws ResponseException {
@@ -369,7 +392,7 @@ public class ChessClient {
         ws.leave(currentGameID, authToken);
         currentState = State.SIGNEDIN;
 
-        return "";
+        return help();
     }
 
 
