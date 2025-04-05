@@ -383,8 +383,9 @@ public class ChessClient {
     public String resign() throws ResponseException {
 
         ws.resign(currentGameID, authToken);
+        currentState = State.PLAYINGGAME;
 
-        return "";
+        return help();
     }
 
     public String leave() throws ResponseException {

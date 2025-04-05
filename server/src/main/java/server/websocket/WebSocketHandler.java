@@ -164,17 +164,25 @@ public class WebSocketHandler {
         ChessGame.TeamColor opposingColor = (currentColor == ChessGame.TeamColor.WHITE ?
                 ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE);
 
+        String opposingUsername;
+        if (username.equalsIgnoreCase(gameDAO.findGame(gameID).whiteUsername())){
+            opposingUsername = gameDAO.findGame(gameID).blackUsername();
+        }
+        else {
+            opposingUsername = gameDAO.findGame(gameID).whiteUsername();
+        }
+
 
         if (currentGame.isInCheckmate(opposingColor)) {
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
-                    currentColor + " has achieved checkmate. They win!");
+                    opposingUsername + " is in checkmate. " + username + " wins!");
             connectionManager.broadcast(null, serverMessage, gameID);
             currentGame.endGame();
             gameDAO.updateGame(currentGame, gameID);
         }
         else if (currentGame.isInCheck(opposingColor)){
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
-                    opposingColor + " is in check.");
+                    opposingUsername + " is in check.");
             connectionManager.broadcast(null, serverMessage, gameID);
         }
         else if (currentGame.isInStalemate(opposingColor)) {
