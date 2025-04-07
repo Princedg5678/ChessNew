@@ -274,8 +274,6 @@ public class ChessClient {
         GameID gameID = idMap.get(gameNumber);
         GameList gameList = server.listGames(authToken);
 
-
-
         for (GameResult game: gameList.games()){
             GameID tempID = new GameID(game.gameID());
             if (Objects.equals(gameID, tempID)){
@@ -283,6 +281,7 @@ public class ChessClient {
                 ws = new WebSocketFacade(serverURL, sms);
                 ws.connectToGame(gameID.gameID(), authToken);
 
+                currentGameID = gameID.gameID();
                 currentState = State.PLAYINGGAME;
                 return "Game Found! Observing game " + gameNumber;
             }
