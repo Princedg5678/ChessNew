@@ -350,6 +350,9 @@ public class ChessClient {
         if (params.length < 1){
             throw new ResponseException("Error: Expected <piece>");
         }
+        if (!params[0].matches("^[a-h][1-8]$") && !params[1].matches("^[a-h][1-8]$")){
+            throw new ResponseException("Error: Invalid Coordinates");
+        }
 
         String tempPosition = params[0];
         char rowNumber = tempPosition.charAt(1);
