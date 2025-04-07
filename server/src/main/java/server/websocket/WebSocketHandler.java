@@ -149,8 +149,17 @@ public class WebSocketHandler {
                 connectionManager.broadcastGame(username, gameMessage, gameID);
             }
 
+            ChessPosition startPosition = newMove.getStartPosition();
+            int startRow = startPosition.getRow();
+            String startCol = convertNumberToLetter(startPosition.getColumn());
+
+            ChessPosition endPosition = newMove.getEndPosition();
+            int endRow = endPosition.getRow();
+            String endCol = convertNumberToLetter(endPosition.getColumn());
+
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
-                    username + " has made their move");
+                    username + " has moved " + startCol +  startRow +
+                            " to " + endCol + endRow + ".");
             connectionManager.broadcast(username, serverMessage, gameID);
 
         } catch (InvalidMoveException e) {
@@ -192,6 +201,23 @@ public class WebSocketHandler {
             currentGame.endGame();
             gameDAO.updateGame(currentGame, gameID);
         }
+    }
+
+    private String convertNumberToLetter(int number){
+        String letter = "";
+
+        switch (number){
+            case 1 -> letter = "a";
+            case 2 -> letter = "b";
+            case 3 -> letter = "c";
+            case 4 -> letter = "d";
+            case 5 -> letter = "e";
+            case 6 -> letter = "f";
+            case 7 -> letter = "g";
+            case 8 -> letter = "h";
+        }
+
+        return letter;
     }
 
     private boolean checkTurn(String playerColor, Integer gameID) throws DataAccessException, IOException {
