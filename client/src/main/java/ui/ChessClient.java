@@ -283,6 +283,7 @@ public class ChessClient {
                 ws = new WebSocketFacade(serverURL, sms);
                 ws.connectToGame(gameID.gameID(), authToken);
 
+                currentState = State.PLAYINGGAME;
                 return "Game Found! Observing game " + gameNumber;
             }
         }

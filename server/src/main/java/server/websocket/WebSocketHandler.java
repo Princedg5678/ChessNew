@@ -102,47 +102,39 @@ public class WebSocketHandler {
         ChessMove newMove = moveCommand.getMove();
         ChessGame currentGame = gameDAO.findGame(gameID).game();
         playerColor = gameDAO.getPlayerColor(gameID, username);
-
         if (!authDAO.checkToken(authToken)) {
             ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
                     null, "Error: Unauthorized");
             connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
             return;
         }
-
         if (currentGame.isGameOver()){
             ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
                     null, "Error: Game Ended");
             connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
             return;
         }
-
         if (gameDAO.getPlayerColor(gameID, username) == null) {
             ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
                     null, "Error: Observers can't make moves");
             connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
             return;
         }
-
         if (!checkTurn(playerColor, gameID)){
             return;
         }
-
         try {
             currentGame.makeMove(newMove);
             gameDAO.updateGame(currentGame, gameID);
             LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                     currentGame, playerColor, null,  null);
-
             if (playerColor.equalsIgnoreCase("WHITE")){
                 connectionManager.broadcastGame(gameDAO.findGame(gameID).blackUsername(), gameMessage, gameID);
                 gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                         currentGame, "BLACK", null,  null);
                 connectionManager.broadcastToRoot(null, gameMessage, gameID,
                         gameDAO.findGame(gameID).blackUsername());
-
-            }
-            else {
+            } else {
                 connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
                 gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                         currentGame, "WHITE", null,  null);
@@ -161,7 +153,6 @@ public class WebSocketHandler {
                     username + " has moved " + startCol +  startRow +
                             " to " + endCol + endRow + ".");
             connectionManager.broadcast(username, serverMessage, gameID);
-
         } catch (InvalidMoveException e) {
             ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
                     null, "Error: Invalid Move");
