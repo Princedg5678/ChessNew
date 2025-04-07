@@ -237,15 +237,19 @@ public class WebSocketHandler {
         ChessGame currentGame = gameDAO.findGame(gameID).game();
         playerColor = gameDAO.getPlayerColor(gameID, username);
 
+        if (playerColor == null){
+            playerColor = "WHITE";
+        }
+
         if (currentGame.getBoard().getPiece(position) != null) {
             LoadGameMessage gameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                     currentGame, playerColor, "",  position);
             connectionManager.broadcastToRoot(null, gameMessage, gameID, username);
         }
         else {
-            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR,
-                    "Error: Not a Piece");
-            connectionManager.broadcastToRoot(serverMessage, null, gameID, username);
+            ErrorGameMessage errorMessage = new ErrorGameMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, "Error: Game is over");
+            connectionManager.broadcastToRoot(errorMessage, null, gameID, username);
         }
 
     }
